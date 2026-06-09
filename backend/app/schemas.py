@@ -2,9 +2,6 @@
 
 from pydantic import BaseModel, Field
 
-# Allowed chat roles for an OpenAI-compatible chat API.
-ChatRole = str
-
 
 class ChatMessage(BaseModel):
     """A single message in a chat conversation."""
@@ -19,7 +16,15 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(..., min_length=1)
 
 
+class Source(BaseModel):
+    """A knowledge-base source used to ground an answer."""
+
+    source: str
+    score: float
+
+
 class ChatResponse(BaseModel):
     """Response from the /chat endpoint."""
 
     reply: str
+    sources: list[Source] = Field(default_factory=list)

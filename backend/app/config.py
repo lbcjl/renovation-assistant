@@ -18,13 +18,26 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # LLM provider (OpenAI-compatible). Defaults target DeepSeek.
+    # --- LLM provider (OpenAI-compatible). Defaults target DeepSeek. ---
     llm_provider: str = "deepseek"
     llm_api_key: str = ""
     llm_base_url: str = "https://api.deepseek.com"
     llm_model: str = "deepseek-chat"
 
-    # Comma-separated CORS origins for the frontend.
+    # --- Embedding provider (OpenAI-compatible /embeddings). ---
+    # Defaults target SiliconFlow hosting BAAI/bge-m3 (strong Chinese retrieval).
+    # NOTE: DeepSeek has no embeddings endpoint, so this needs its own key.
+    embedding_api_key: str = ""
+    embedding_base_url: str = "https://api.siliconflow.cn/v1"
+    embedding_model: str = "BAAI/bge-m3"
+
+    # --- Retrieval (RAG) ---
+    retrieval_top_k: int = 4
+    retrieval_min_score: float = 0.35
+    knowledge_dir: str = "data/knowledge"
+    index_dir: str = "data/index"
+
+    # --- CORS ---
     cors_origins: str = "http://localhost:5173"
 
     @property

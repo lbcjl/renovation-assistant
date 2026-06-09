@@ -1,7 +1,7 @@
 """FastAPI application entrypoint.
 
-PR1 scope: a working request/response chat endpoint backed by a configurable
-LLM provider. Retrieval-augmented generation (RAG) is added in PR2.
+PR2 scope: the chat endpoint retrieves relevant knowledge (RAG), answers from it
+and cites sources, with an honest fallback when nothing relevant is found.
 """
 
 import logging
@@ -12,12 +12,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.llm.base import LLMProvider
 from app.llm.factory import get_llm_provider
-from app.prompts import SYSTEM_PROMPT
-from app.schemas import ChatMessage, ChatRequest, ChatResponse
+from app.prompts import build_system_prompt
+from app.rag.factory import get_retriever
+from app.rag.retriever import RetrievedContext, Retriever
+from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
 
-app = FastAPI(title="Renovation Assistant API", version="0.1.0")
+app = FastAPI(title="Renovation Assistant API", version="0.2.0")
 
 _settings = get_settings()
 if not _settings.llm_api_key:
@@ -38,23 +40,48 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-def _with_system_prompt(messages: list[ChatMessage]) -> list[ChatMessage]:
-    """Ensure the conversation starts with the assistant's system prompt."""
-    if messages and messages[0].role == "system":
-        return messages
-    return [ChatMessage(role="system", content=SYSTEM_PROMPT), *messages]
+def _latest_user_message(messages: list[ChatMessage]) -> str:
+    for message in reversed(messages):
+        if message.role == "user":
+            return message.content
+    return ""
+
+
+def _conversation(messages: list[ChatMessage]) -> list[ChatMessage]:
+    """Keep only user/assistant turns; the server owns the system prompt."""
+    return [message for message in messages if message.role != "system"]
+
+
+def _format_context_blocks(context: RetrievedContext) -> list[str]:
+    return [
+        f"【资料{index}｜来源：{hit.document.source}】\n{hit.document.text}"
+        for index, hit in enumerate(context.hits, start=1)
+    ]
+
+
+def _dedup_sources(context: RetrievedContext) -> list[Source]:
+    best: dict[str, float] = {}
+    for hit in context.hits:
+        best[hit.document.source] = max(best.get(hit.document.source, 0.0), hit.score)
+    return [Source(source=source, score=round(score, 3)) for source, score in best.items()]
 
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
     provider: LLMProvider = Depends(get_llm_provider),
+    retriever: Retriever = Depends(get_retriever),
 ) -> ChatResponse:
-    """Answer a renovation question (single request/response, no streaming yet)."""
-    messages = _with_system_prompt(request.messages)
+    """Answer a renovation question grounded in retrieved knowledge."""
+    context = await retriever.retrieve(_latest_user_message(request.messages))
+    system_content = build_system_prompt(_format_context_blocks(context))
+    conversation = [
+        ChatMessage(role="system", content=system_content),
+        *_conversation(request.messages),
+    ]
     try:
-        reply = await provider.chat(messages)
+        reply = await provider.chat(conversation)
     except Exception as exc:  # noqa: BLE001 - surface any upstream failure as 502
         logger.exception("LLM provider call failed")
         raise HTTPException(status_code=502, detail="LLM provider error") from exc
-    return ChatResponse(reply=reply)
+    return ChatResponse(reply=reply, sources=_dedup_sources(context))

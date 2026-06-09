@@ -21,8 +21,8 @@ export function ChatWindow() {
     setLoading(true)
 
     try {
-      const reply = await postChat(nextMessages)
-      setMessages([...nextMessages, { role: 'assistant', content: reply }])
+      const { reply, sources } = await postChat(nextMessages)
+      setMessages([...nextMessages, { role: 'assistant', content: reply, sources }])
     } catch (err) {
       setError(err instanceof Error ? err.message : '出错了，请稍后重试')
     } finally {
@@ -48,6 +48,11 @@ export function ChatWindow() {
         {messages.map((message, index) => (
           <div key={index} className={`chat__message chat__message--${message.role}`}>
             {message.content}
+            {message.sources && message.sources.length > 0 && (
+              <div className="chat__sources">
+                依据：{message.sources.map((source) => source.source).join('、')}
+              </div>
+            )}
           </div>
         ))}
         {loading && <div className="chat__message chat__message--assistant">思考中…</div>}
