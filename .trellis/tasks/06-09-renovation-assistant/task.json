@@ -1,0 +1,41 @@
+{
+  "id": "renovation-assistant",
+  "name": "renovation-assistant",
+  "title": "brainstorm: 装修智能体 (Renovation Assistant)",
+  "description": "Brainstorm and scope a renovation assistant agent, then build MVP",
+  "status": "in_progress",
+  "dev_type": "fullstack",
+  "scope": null,
+  "priority": "P1",
+  "creator": "renovation-assistant",
+  "assignee": "renovation-assistant",
+  "createdAt": "2026-06-09",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 1,
+  "next_action": [
+    {
+      "phase": 1,
+      "action": "implement"
+    },
+    {
+      "phase": 2,
+      "action": "check"
+    },
+    {
+      "phase": 3,
+      "action": "finish"
+    },
+    {
+      "phase": 4,
+      "action": "create-pr"
+    }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "relatedFiles": [],
+  "notes": ""
+}

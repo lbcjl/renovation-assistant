@@ -1,0 +1,1 @@
+"""Renovation Assistant backend package."""
