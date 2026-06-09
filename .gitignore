@@ -32,8 +32,5 @@ backend/data/database.db
 # Trellis workspace (session notes, not code)
 .trellis/workspace/
 
-# User uploaded data files
-data/
-
 # Claude Code harness-installed global skills (plugin tooling, not part of this project)
 .claude/skills/
