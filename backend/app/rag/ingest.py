@@ -19,7 +19,8 @@ from app.rag.store import Document, VectorStore
 async def build_index() -> VectorStore:
     settings = get_settings()
     knowledge_dir = Path(settings.knowledge_dir)
-    doc_paths = sorted(knowledge_dir.glob("*.md"))
+    # Recursively search for all .md files (including subdirectories like weixin-docs/)
+    doc_paths = sorted(knowledge_dir.glob("**/*.md"))
     if not doc_paths:
         raise SystemExit(f"No .md files found in {knowledge_dir.resolve()}")
     if not settings.embedding_api_key:
