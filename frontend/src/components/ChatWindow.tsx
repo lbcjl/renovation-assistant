@@ -23,7 +23,11 @@ function patchLast(
   return next
 }
 
-export function ChatWindow() {
+interface ChatWindowProps {
+  onAuthError: () => void
+}
+
+export function ChatWindow({ onAuthError }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -51,7 +55,19 @@ export function ChatWindow() {
           ),
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : '出错了，请稍后重试')
+      const errorMessage = err instanceof Error ? err.message : '出错了，请稍后重试'
+
+      // Handle auth errors specifically
+      if (errorMessage.includes('登录') || errorMessage.includes('未登录')) {
+        setError(errorMessage)
+        // Trigger logout after a delay
+        setTimeout(() => {
+          onAuthError()
+        }, 2000)
+      } else {
+        setError(errorMessage)
+      }
+
       setMessages((prev) => {
         const last = prev[prev.length - 1]
         return last && last.role === 'assistant' && last.content === '' ? prev.slice(0, -1) : prev

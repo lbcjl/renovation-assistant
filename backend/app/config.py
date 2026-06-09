@@ -43,6 +43,14 @@ class Settings(BaseSettings):
     # --- CORS ---
     cors_origins: str = "http://localhost:5173"
 
+    # --- Authentication (JWT) ---
+    jwt_secret_key: str = "dev-secret-change-in-production-min-32-chars"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_days: int = 7
+
+    # --- Database ---
+    database_path: str = "data/database.db"
+
     @property
     def cors_origin_list(self) -> list[str]:
         """Parse ``cors_origins`` into a clean list of origins."""

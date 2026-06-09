@@ -42,3 +42,28 @@ class ChatResponse(BaseModel):
 
     reply: str
     sources: list[Source] = Field(default_factory=list)
+
+
+# --- Authentication schemas ---
+
+
+class LoginRequest(BaseModel):
+    """Payload for the /auth/login endpoint."""
+
+    username: str = Field(..., min_length=1, max_length=50)
+    password: str = Field(..., min_length=1)
+
+
+class TokenResponse(BaseModel):
+    """Response from the /auth/login endpoint."""
+
+    access_token: str
+    token_type: str = "bearer"
+    username: str
+
+
+class UserResponse(BaseModel):
+    """Response from the /auth/me endpoint."""
+
+    username: str
+    is_active: bool

@@ -3,6 +3,8 @@
 PR3 scope: streaming chat (POST /chat/stream, Server-Sent Events) on top of the
 RAG pipeline, plus request-size guards and a configurable LLM timeout. The
 non-streaming POST /chat is kept for simple clients and tests.
+
+PR5 scope: authentication endpoints (/auth/login, /auth/me) for JWT-based login.
 """
 
 import json
@@ -14,16 +16,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from app.config import get_settings
+from app.dependencies import get_current_user
 from app.llm.base import LLMProvider
 from app.llm.factory import get_llm_provider
+from app.models import User
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
+from app.routers import auth
 from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
 
-app = FastAPI(title="Renovation Assistant API", version="0.3.0")
+app = FastAPI(title="Renovation Assistant API", version="0.5.0")
+
+# Register authentication router
+app.include_router(auth.router)
 
 _settings = get_settings()
 if not _settings.llm_api_key:
@@ -88,8 +96,12 @@ async def chat(
     request: ChatRequest,
     provider: LLMProvider = Depends(get_llm_provider),
     retriever: Retriever = Depends(get_retriever),
+    user: User = Depends(get_current_user),
 ) -> ChatResponse:
-    """Answer a renovation question grounded in retrieved knowledge (non-streaming)."""
+    """Answer a renovation question grounded in retrieved knowledge (non-streaming).
+
+    Requires authentication.
+    """
     conversation, sources = await _build_conversation(request, retriever)
     try:
         reply = await provider.chat(conversation)
@@ -111,8 +123,12 @@ async def chat_stream(
     request: ChatRequest,
     provider: LLMProvider = Depends(get_llm_provider),
     retriever: Retriever = Depends(get_retriever),
+    user: User = Depends(get_current_user),
 ) -> StreamingResponse:
-    """Stream the answer over SSE: a `sources` event first, then `delta`s, then `done`."""
+    """Stream the answer over SSE: a `sources` event first, then `delta`s, then `done`.
+
+    Requires authentication.
+    """
     conversation, sources = await _build_conversation(request, retriever)
 
     async def event_stream() -> AsyncIterator[str]:

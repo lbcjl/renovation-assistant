@@ -2,6 +2,9 @@
 
 The chat endpoints depend on ``get_llm_provider`` and ``get_retriever``; tests
 override both with fakes so no network access or API key is required.
+
+PR5+: Chat endpoints now require authentication. Tests override ``get_current_user``
+to bypass actual JWT validation in most tests.
 """
 
 from collections.abc import AsyncIterator, Iterator
@@ -9,8 +12,10 @@ from collections.abc import AsyncIterator, Iterator
 import pytest
 from fastapi.testclient import TestClient
 
+from app.dependencies import get_current_user
 from app.llm.factory import get_llm_provider
 from app.main import app
+from app.models import User
 from app.rag.factory import get_retriever
 from app.rag.retriever import Retriever
 from app.rag.store import Document, VectorStore
@@ -90,10 +95,18 @@ def fake_provider() -> FakeProvider:
     return FakeProvider()
 
 
+def _fake_user() -> User:
+    """Return a fake authenticated user for tests."""
+    user = User(username="testuser", hashed_password="fakehash", is_active=True)
+    user.id = 1
+    return user
+
+
 @pytest.fixture
 def client(fake_provider: FakeProvider) -> Iterator[TestClient]:
     app.dependency_overrides[get_llm_provider] = lambda: fake_provider
     app.dependency_overrides[get_retriever] = _empty_retriever
+    app.dependency_overrides[get_current_user] = _fake_user
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -103,6 +116,7 @@ def client(fake_provider: FakeProvider) -> Iterator[TestClient]:
 def client_with_index(fake_provider: FakeProvider) -> Iterator[TestClient]:
     app.dependency_overrides[get_llm_provider] = lambda: fake_provider
     app.dependency_overrides[get_retriever] = _populated_retriever
+    app.dependency_overrides[get_current_user] = _fake_user
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
