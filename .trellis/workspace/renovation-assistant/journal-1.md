@@ -118,3 +118,49 @@ PR3 在 PR1/PR2 基础上加入流式输出与基础加固，MVP 三步（脚手
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Expand RAG knowledge base from public sources
+
+**Date**: 2026-06-09
+**Task**: Expand RAG knowledge base from public sources
+
+### Summary
+
+Added 5 paraphrased-and-cited knowledge docs (index 13 -> 23 chunks / 11 docs); verified new-topic retrieval; sources recorded in data/sources.md.
+
+### Main Changes
+
+本段在 MVP（PR1–PR3）完成后，按「公开资料整理扩充知识库」对 RAG 知识库做了扩充。
+
+| 项 | 内容 |
+|----|------|
+| 新增知识 | 5 篇：墙面与油漆、吊顶、地板、厨房、装修合同与避坑 |
+| 整理方式 | 依据公开资料（知乎 / 新浪家居 / 什么值得买 / 住小帮 / 房天下 / 上海装潢网 / 政府消费提示等）**用自有措辞改写事实要点**，非原文照搬；来源链接记于 `data/sources.md`（不进检索块，避免污染 RAG） |
+| 索引 | 由 13 块 / 6 文档 增至 **23 块 / 11 文档**（`python -m app.rag.ingest`） |
+| 验证 | 真实检索新主题——「厨房台面用石英石还是不锈钢」top 命中 `kitchen · 厨房台面选什么材质？` score 0.847 |
+
+**版权处理**：仅改写事实性要点（事实本身不受著作权保护），单独留存来源链接备查，避免照搬原文或违反站点条款。
+
+**提交**：`ec06cbd`（feat: expand knowledge base from public sources）。
+
+**后续**：可继续扩充更多主题、检索精度调优；或做用户账号、预算估算 / 选材清单等工具能力。
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ec06cbd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
