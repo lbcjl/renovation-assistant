@@ -1,0 +1,4 @@
+  File "d:\project\renovation-assistant\scripts\extract_remaining_docs.py", line 31
+    "吊顶问题安全频发：轻钢龙骨"偷工减料"成行业潜规则？",
+    ^^^^^^^^^^^^^^^^^^^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?

@@ -67,3 +67,39 @@ class UserResponse(BaseModel):
 
     username: str
     is_active: bool
+
+
+# --- File upload schemas ---
+
+
+class FileMetadata(BaseModel):
+    """Metadata for an uploaded file."""
+
+    id: str
+    filename: str
+    original_name: str
+    type: str
+    size: int
+    path: str
+    uploaded_at: str
+    in_knowledge_base: bool = False
+    user_id: str = "default"
+
+
+class FileListResponse(BaseModel):
+    """Response from the /api/files endpoint."""
+
+    files: list[FileMetadata]
+
+
+class FileUploadResponse(BaseModel):
+    """Response from the /api/upload endpoint."""
+
+    file: FileMetadata
+
+
+class AddToKnowledgeBaseResponse(BaseModel):
+    """Response from the /api/files/{file_id}/add-to-kb endpoint."""
+
+    success: bool
+    message: str

@@ -35,6 +35,11 @@ class Retriever:
         self._top_k = top_k
         self._min_score = min_score
 
+    @property
+    def store(self) -> VectorStore:
+        """Access the underlying vector store for direct operations."""
+        return self._store
+
     async def retrieve(self, query: str) -> RetrievedContext:
         # No index yet -> behave gracefully (no embedding call, empty context).
         if self._store.size == 0 or not query.strip():

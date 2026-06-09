@@ -10,10 +10,12 @@ PR5 scope: authentication endpoints (/auth/login, /auth/me) for JWT-based login.
 import json
 import logging
 from collections.abc import AsyncIterator
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.dependencies import get_current_user
@@ -23,7 +25,7 @@ from app.models import User
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
-from app.routers import auth
+from app.routers import auth, files
 from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
@@ -32,6 +34,13 @@ app = FastAPI(title="Renovation Assistant API", version="0.5.0")
 
 # Register authentication router
 app.include_router(auth.router)
+# Register file management router
+app.include_router(files.router)
+
+# Mount static file serving for uploaded files
+_upload_dir = Path("backend/data/uploads")
+_upload_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/backend/data/uploads", StaticFiles(directory=str(_upload_dir)), name="uploads")
 
 _settings = get_settings()
 if not _settings.llm_api_key:

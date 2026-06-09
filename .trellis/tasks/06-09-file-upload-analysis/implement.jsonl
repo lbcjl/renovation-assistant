@@ -1,0 +1,10 @@
+{"file": ".trellis/workflow.md", "reason": "Project workflow and conventions"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend development guide"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend development guide"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Frontend component patterns: function components, props, UI states"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Backend module organization: routers, factories, protocols"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Error handling patterns for API endpoints"}
+{"file": "backend/app/main.py", "reason": "Existing API endpoint patterns and auth"}
+{"file": "backend/app/routers/auth.py", "reason": "Router module pattern example"}
+{"file": "frontend/src/components/ChatWindow.tsx", "reason": "Chat component with input box - add upload button here"}
+{"file": "backend/app/rag/ingest.py", "reason": "RAG ingestion pattern for adding files to knowledge base"}

@@ -24,3 +24,17 @@ export interface LoginResponse {
   token_type: string
   username: string
 }
+
+// --- File upload types ---
+
+export interface FileMetadata {
+  id: string
+  filename: string
+  original_name: string
+  type: string
+  size: number
+  path: string
+  uploaded_at: string
+  in_knowledge_base: boolean
+  user_id: string
+}

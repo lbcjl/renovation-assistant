@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/ruff.exe check *)",
+      "Bash(.venv/Scripts/python.exe -m pytest -q)",
+      "Bash(python3 ./.trellis/scripts/init_developer.py claude-agent)",
+      "Bash(python3 ./.trellis/scripts/get_context.py)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -57,11 +65,5 @@
       }
     ]
   },
-  "enabledPlugins": {},
-  "permissions": {
-    "allow": [
-      "Bash(.venv/Scripts/ruff.exe check *)",
-      "Bash(.venv/Scripts/python.exe -m pytest -q)"
-    ]
-  }
+  "enabledPlugins": {}
 }

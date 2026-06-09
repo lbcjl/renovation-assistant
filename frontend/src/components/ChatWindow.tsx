@@ -1,8 +1,11 @@
-import { useState, type KeyboardEvent } from 'react'
+import { useState, useEffect, type KeyboardEvent } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { streamChat } from '../api/chat'
-import type { ChatMessage } from '../types'
+import { listFiles, deleteFile, addToKnowledgeBase } from '../api/files'
+import type { ChatMessage, FileMetadata } from '../types'
+import { FileCard } from './FileCard'
+import { FileUpload } from './FileUpload'
 
 const SUGGESTIONS = [
   '卫生间防水要刷多高？',
@@ -32,6 +35,57 @@ export function ChatWindow({ onAuthError }: ChatWindowProps) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [files, setFiles] = useState<FileMetadata[]>([])
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  // Load files on mount
+  useEffect(() => {
+    void loadFiles()
+  }, [])
+
+  async function loadFiles(): Promise<void> {
+    try {
+      const fileList = await listFiles()
+      setFiles(fileList)
+    } catch (err) {
+      // Silently fail - files are optional
+      console.error('Failed to load files:', err)
+    }
+  }
+
+  async function handleUploadSuccess(file: FileMetadata): Promise<void> {
+    setFiles((prev) => [...prev, file])
+    setUploadError(null)
+  }
+
+  function handleUploadError(errorMessage: string): void {
+    setUploadError(errorMessage)
+    setTimeout(() => setUploadError(null), 5000)
+  }
+
+  async function handleDeleteFile(fileId: string): Promise<void> {
+    try {
+      await deleteFile(fileId)
+      setFiles((prev) => prev.filter((f) => f.id !== fileId))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '删除失败'
+      setUploadError(errorMessage)
+      setTimeout(() => setUploadError(null), 5000)
+    }
+  }
+
+  async function handleAddToKb(fileId: string): Promise<void> {
+    try {
+      await addToKnowledgeBase(fileId)
+      setFiles((prev) =>
+        prev.map((f) => (f.id === fileId ? { ...f, in_knowledge_base: true } : f)),
+      )
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '操作失败'
+      setUploadError(errorMessage)
+      setTimeout(() => setUploadError(null), 5000)
+    }
+  }
 
   async function submit(text: string): Promise<void> {
     const trimmed = text.trim()
@@ -86,6 +140,23 @@ export function ChatWindow({ onAuthError }: ChatWindowProps) {
 
   return (
     <div className="chat">
+      {/* File list section */}
+      {files.length > 0 && (
+        <div className="chat__files">
+          <div className="chat__files-header">已上传文件 ({files.length})</div>
+          <div className="chat__files-grid">
+            {files.map((file) => (
+              <FileCard
+                key={file.id}
+                file={file}
+                onDelete={handleDeleteFile}
+                onAddToKb={handleAddToKb}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="chat__messages">
         {messages.length === 0 ? (
           <div className="chat__empty">
@@ -147,8 +218,14 @@ export function ChatWindow({ onAuthError }: ChatWindowProps) {
       </div>
 
       {error && <p className="chat__error">{error}</p>}
+      {uploadError && <p className="chat__error">{uploadError}</p>}
 
       <div className="chat__input">
+        <FileUpload
+          onUploadSuccess={handleUploadSuccess}
+          onUploadError={handleUploadError}
+          disabled={loading}
+        />
         <textarea
           value={input}
           onChange={(event) => setInput(event.target.value)}

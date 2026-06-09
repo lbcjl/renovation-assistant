@@ -5,6 +5,7 @@ pydantic>=2.7
 pydantic-settings>=2.3
 openai>=1.40
 numpy>=1.26
+python-multipart>=0.0.9
 
 # Authentication & Database
 sqlalchemy[asyncio]>=2.0
@@ -12,3 +13,9 @@ alembic>=1.13
 bcrypt>=4.0
 python-jose[cryptography]>=3.3
 aiosqlite>=0.19
+
+# Document processing for RAG
+pypdf>=4.0
+python-docx>=1.1.0
+openpyxl>=3.1
+Pillow>=10.0

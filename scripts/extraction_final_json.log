@@ -1,0 +1,63 @@
+============================================================
+Extract remaining 7 documents
+============================================================
+
+Starting browser...
+
+Navigating to main doc...
+Main doc loaded
+
+[1/7] 一口气搞懂自装修：工人选择与工费参考
+  Clicked
+  Failed: no new tab
+
+[2/7] 吊顶问题安全频发：轻钢龙骨偷工减料成行业潜规则？
+  Click timeout (attempt 1/3)
+  Retry 1/3...
+  Click timeout (attempt 2/3)
+  Retry 2/3...
+  Click timeout (attempt 3/3)
+  Failed: cannot click link
+
+[3/7] 全屋定制饰面不会选？四种工艺横向对比优缺点分析，拒绝踩坑！
+  Clicked
+  Extracting content...
+  Screenshot saved: 全屋定制饰面不会选-四种工艺横向对比优缺点分析-拒绝踩坑-full.png
+  Text length: 202 chars
+  Success!
+
+[4/7] 全屋定制避坑!七种基材怎么选柜体、柜门怎么搭配最合理
+  Clicked
+  Extracting content...
+  Screenshot saved: 全屋定制避坑-七种基材怎么选柜体-柜门怎么搭配最合理-full.png
+  Text length: 202 chars
+  Success!
+
+[5/7] 全屋定制板材三大主流环保标准对比表（环保篇）
+  Clicked
+  Extracting content...
+  Screenshot saved: 全屋定制板材三大主流环保标准对比表-环保篇-full.png
+  Text length: 115 chars
+  Success!
+
+[6/7] 全屋定制封边工艺终极实测对比表
+  Clicked
+  Extracting content...
+  Screenshot saved: 全屋定制封边工艺终极实测对比表-full.png
+  Text length: 115 chars
+  Success!
+
+[7/7] 全屋定制合集
+  Clicked
+  Extracting content...
+  Screenshot saved: 全屋定制合集-full.png
+  Text length: 112 chars
+  Success!
+
+============================================================
+Extraction complete!
+============================================================
+Success: 5
+Skipped: 0
+Failed: 2
+Total: 7/7

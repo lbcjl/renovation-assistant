@@ -1,0 +1,27 @@
+============================================================
+Extract remaining 2 documents
+============================================================
+
+Starting browser...
+
+Navigating to main doc...
+Main doc loaded
+
+[1/2] 一口气搞懂自装修：工人选择与工费参考
+  File exists, skipping
+
+[2/2] 吊顶问题安全频发：轻钢龙骨偷工减料成行业潜规则？
+  Click timeout (attempt 1/3)
+  Retry 1/3...
+  Click timeout (attempt 2/3)
+  Retry 2/3...
+  Click timeout (attempt 3/3)
+  Failed: cannot click link
+
+============================================================
+Extraction complete!
+============================================================
+Success: 0
+Skipped: 1
+Failed: 1
+Total: 2/2

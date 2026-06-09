@@ -1,0 +1,4 @@
+  File "D:\project\renovation-assistant\scripts\extract_weixin_docs_v5.py", line 23
+    DOCUMENT_TITLES = [
+                      ^
+SyntaxError: '[' was never closed

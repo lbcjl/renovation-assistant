@@ -1,0 +1,457 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - toolbar "titlebar" [ref=e6]:
+      - button "按钮:文档首页 按钮:文档首页下拉" [ref=e7]:
+        - generic [ref=e12]:
+          - generic "按钮:文档首页" [ref=e13]:
+            - img [ref=e14]
+          - generic "按钮:文档首页下拉" [ref=e16]
+      - button
+      - button "一口气搞懂自装修：全流程攻略" [ref=e19]:
+        - textbox [disabled] [ref=e24]: 一口气搞懂自装修：全流程攻略
+      - button
+      - button:
+        - generic: Dept.
+      - button "企业" [ref=e25]:
+        - generic [ref=e28]: 企业
+      - button "只能查看" [ref=e29]:
+        - button "只能查看" [ref=e39]:
+          - generic [ref=e41]:
+            - text: 只能查看
+            - img [ref=e42]
+      - button [ref=e46]
+      - button
+      - button
+      - button: Remind
+      - button
+      - button
+      - button
+      - button "按钮:文档成员" [ref=e54]:
+        - generic "按钮:文档成员" [ref=e63]:
+          - img [ref=e65]
+          - generic [ref=e68]: "3"
+      - button
+      - button "按钮:分享" [ref=e69]:
+        - generic "按钮:分享" [ref=e77]:
+          - img [ref=e78]
+      - button "按钮:文档动态" [ref=e81]:
+        - generic "按钮:文档动态" [ref=e90]:
+          - img [ref=e91]
+      - button "file" [ref=e94]:
+        - generic "file" [ref=e99]:
+          - generic "按钮:文件操作" [ref=e104]:
+            - img [ref=e106]
+      - button
+      - button "头像" [ref=e108]:
+        - img "头像" [ref=e116]
+    - generic [ref=e123]:
+      - toolbar "简约工具栏" [ref=e124]:
+        - generic [ref=e125]:
+          - button [ref=e135]:
+            - generic [ref=e136]:
+              - button [ref=e137]:
+                - img [ref=e138]
+              - generic [ref=e140]: 菜单
+          - generic [ref=e145]:
+            - button [disabled] [ref=e150]:
+              - button [disabled] [ref=e152]:
+                - img [ref=e153]
+            - button [disabled] [ref=e159]:
+              - button [disabled] [ref=e161]:
+                - img [ref=e162]
+            - button [disabled] [ref=e168]:
+              - button [disabled] [ref=e170]:
+                - img [ref=e171]
+            - button [disabled] [ref=e177]:
+              - button [disabled] [ref=e179]:
+                - img [ref=e180]
+          - generic [ref=e185]:
+            - button [ref=e193]:
+              - generic [ref=e194]:
+                - button [ref=e195]:
+                  - img [ref=e196]
+                - generic [ref=e197]: 插入
+            - button [disabled] [ref=e204]:
+              - generic [ref=e205]:
+                - button [disabled] [ref=e206]:
+                  - img [ref=e207]
+                - generic [ref=e209]: 图片
+          - generic [ref=e212]:
+            - button [disabled] [ref=e220]:
+              - generic [ref=e222]: 正文
+            - button [disabled] [ref=e232]:
+              - generic [ref=e234]: 默认字体
+            - button [disabled] [ref=e244]:
+              - generic [ref=e246]: "11"
+            - button [disabled] [ref=e253]:
+              - button [disabled] [ref=e255]:
+                - img [ref=e256]
+            - button [disabled] [ref=e262]:
+              - button [disabled] [ref=e264]:
+                - img [ref=e265]
+            - button [disabled] [pressed] [ref=e271]:
+              - button [disabled] [ref=e273]:
+                - img [ref=e274]
+            - button [disabled] [ref=e280]:
+              - button [disabled] [ref=e282]:
+                - img [ref=e283]
+            - group [disabled] [ref=e292]:
+              - generic [ref=e293]:
+                - button [disabled] [ref=e294]:
+                  - img [ref=e295]
+                - button [disabled] [ref=e298]
+            - button [disabled] [ref=e303]:
+              - button [disabled] [ref=e305]:
+                - img [ref=e306]
+            - button [disabled] [ref=e313]:
+              - button [disabled] [ref=e315]:
+                - img [ref=e316]
+            - button [disabled] [ref=e322]:
+              - button [disabled] [ref=e324]:
+                - img [ref=e325]
+            - button [disabled] [ref=e336]:
+              - button [disabled] [ref=e338]:
+                - img [ref=e339]
+            - button [disabled] [ref=e350]:
+              - button [disabled] [ref=e352]:
+                - img [ref=e353]
+            - button [disabled] [ref=e359]:
+              - button [disabled] [ref=e361]:
+                - img [ref=e362]
+            - group [disabled] [ref=e373]:
+              - generic [ref=e374]:
+                - button [disabled] [ref=e375]:
+                  - img [ref=e376]
+                - button [disabled] [ref=e380]
+            - group [disabled] [ref=e388]:
+              - generic [ref=e389]:
+                - button [disabled] [ref=e390]:
+                  - img [ref=e391]
+                - button [disabled] [ref=e394]
+            - group [disabled] [ref=e402]:
+              - generic [ref=e403]:
+                - button [disabled] [ref=e404]:
+                  - img [ref=e405]
+                - button [disabled] [ref=e409]
+            - button [disabled] [ref=e414]:
+              - button [disabled] [ref=e416]:
+                - img [ref=e417]
+            - button [ref=e426]:
+              - button [ref=e428]:
+                - img [ref=e429]
+          - generic [ref=e437]:
+            - group [disabled] [ref=e445]:
+              - generic [ref=e446]:
+                - button [disabled] [ref=e447]:
+                  - img [ref=e448]
+                - button [disabled] [ref=e451]
+            - group [disabled] [ref=e459]:
+              - generic [ref=e460]:
+                - button [disabled] [ref=e461]:
+                  - img [ref=e462]
+                - button [disabled] [ref=e465]
+            - button [disabled] [ref=e470]:
+              - button [disabled] [ref=e472]:
+                - img [ref=e473]
+            - button [disabled] [ref=e479]:
+              - button [disabled] [ref=e481]:
+                - img [ref=e482]
+            - button [disabled] [ref=e488]:
+              - button [disabled] [ref=e490]:
+                - img [ref=e491]
+            - button [disabled] [ref=e500]:
+              - button [disabled] [ref=e502]
+            - button [disabled] [ref=e513]:
+              - button [disabled] [ref=e515]:
+                - img [ref=e516]
+            - button [disabled] [ref=e524]:
+              - button [disabled] [ref=e526]:
+                - img [ref=e527]
+            - button [disabled] [ref=e533]:
+              - button [disabled] [ref=e535]:
+                - img [ref=e536]
+            - button [disabled] [ref=e542]:
+              - button [disabled] [ref=e544]:
+                - img [ref=e545]
+          - button [disabled] [ref=e557]:
+            - generic [ref=e558]:
+              - button [disabled] [ref=e559]:
+                - img [ref=e560]
+              - generic [ref=e562]: 快捷工具
+          - button [ref=e575]:
+            - button [ref=e577]:
+              - img [ref=e578]
+          - generic [ref=e583]:
+            - button [disabled] [ref=e588]:
+              - generic [ref=e589]:
+                - button [disabled] [ref=e590]:
+                  - img [ref=e591]
+                - generic [ref=e593]: 打印
+            - button [disabled] [ref=e598]:
+              - generic [ref=e599]:
+                - button [disabled] [ref=e600]:
+                  - img [ref=e601]
+                - generic [ref=e603]: 提及
+          - button [ref=e613]:
+            - button [ref=e615]:
+              - img [ref=e616]
+        - generic [ref=e622]:
+          - button "菜单" [ref=e632]:
+            - generic [ref=e633]:
+              - button [ref=e634]:
+                - img [ref=e635]
+              - generic [ref=e637]: 菜单
+          - generic [ref=e642]:
+            - button "撤销" [disabled] [ref=e647]:
+              - button [disabled] [ref=e649]:
+                - img [ref=e650]
+            - button "重做" [disabled] [ref=e656]:
+              - button [disabled] [ref=e658]:
+                - img [ref=e659]
+            - button "格式刷，双击可重复使用" [disabled] [ref=e665]:
+              - button [disabled] [ref=e667]:
+                - img [ref=e668]
+            - button "清除格式" [disabled] [ref=e674]:
+              - button [disabled] [ref=e676]:
+                - img [ref=e677]
+          - generic [ref=e682]:
+            - button "插入" [ref=e690]:
+              - generic [ref=e691]:
+                - button [ref=e692]:
+                  - img [ref=e693]
+                - generic [ref=e694]: 插入
+            - button "图片" [disabled] [ref=e701]:
+              - generic [ref=e702]:
+                - button [disabled] [ref=e703]:
+                  - img [ref=e704]
+                - generic [ref=e706]: 图片
+          - generic [ref=e709]:
+            - button "标题样式" [disabled] [ref=e717]:
+              - generic [ref=e719]: 正文
+            - button "字体" [disabled] [ref=e729]:
+              - generic [ref=e731]: 默认字体
+            - button "字号" [disabled] [ref=e741]:
+              - generic [ref=e743]: "11"
+            - button "增大字号" [disabled] [ref=e750]:
+              - button [disabled] [ref=e752]:
+                - img [ref=e753]
+            - button "减小字号" [disabled] [ref=e759]:
+              - button [disabled] [ref=e761]:
+                - img [ref=e762]
+            - button "加粗" [disabled] [pressed] [ref=e768]:
+              - button [disabled] [ref=e770]:
+                - img [ref=e771]
+            - button "倾斜" [disabled] [ref=e777]:
+              - button [disabled] [ref=e779]:
+                - img [ref=e780]
+            - group "下划线" [disabled] [ref=e789]:
+              - generic [ref=e790]:
+                - button "下划线" [disabled] [ref=e791]:
+                  - img [ref=e792]
+                - button "下划线 更多选项" [disabled] [ref=e795]
+            - group "底纹颜色" [disabled] [ref=e803]:
+              - generic [ref=e804]:
+                - button "底纹颜色" [disabled] [ref=e805]:
+                  - img [ref=e806]
+                - button "底纹颜色 更多选项" [disabled] [ref=e809]
+            - group "字体颜色" [disabled] [ref=e817]:
+              - generic [ref=e818]:
+                - button "字体颜色" [disabled] [ref=e819]:
+                  - img [ref=e820]
+                - button "字体颜色 更多选项" [disabled] [ref=e824]
+            - button "更多功能" [ref=e832]:
+              - button [ref=e834]:
+                - img [ref=e835]
+      - toolbar "快捷操作" [ref=e841]:
+        - generic [ref=e844]:
+          - button "查找和替换" [ref=e849]:
+            - button [ref=e851]:
+              - img [ref=e852]
+          - button "工具栏切换" [ref=e861]:
+            - button [ref=e863]:
+              - img [ref=e864]
+    - generic [ref=e868]:
+      - generic [ref=e876]:
+        - generic [ref=e881]:
+          - generic [ref=e882]:
+            - generic [ref=e884]:
+              - generic [ref=e888] [cursor=pointer]:
+                - img [ref=e890]
+                - generic [ref=e898]: 全国装修付费咨询
+              - generic [ref=e902] [cursor=pointer]:
+                - img [ref=e904]
+                - generic [ref=e912]: 全国线上设计服务
+              - generic [ref=e916] [cursor=pointer]:
+                - img [ref=e918]
+                - generic [ref=e926]: 全国建材主材团购
+              - generic [ref=e930] [cursor=pointer]:
+                - img [ref=e932]
+                - generic [ref=e940]: 成都本地工长服务
+              - generic [ref=e944] [cursor=pointer]:
+                - img [ref=e946]
+                - generic [ref=e954]: 成都本地设计服务
+              - generic [ref=e958] [cursor=pointer]:
+                - img [ref=e960]
+                - generic [ref=e962]: 点此处添加我为好友咨询服务
+              - generic [ref=e966] [cursor=pointer]:
+                - img [ref=e968]
+                - generic [ref=e976]: 一口气搞懂自装修：工人选择与工费参考
+              - generic [ref=e980] [cursor=pointer]:
+                - img [ref=e982]
+                - generic [ref=e990]: 一口气搞懂自装修：开工准备与交底细节
+              - generic [ref=e994] [cursor=pointer]:
+                - img [ref=e996]
+                - generic [ref=e1004]: 一口气搞懂自装修：打拆环节
+              - generic [ref=e1008] [cursor=pointer]:
+                - img [ref=e1010]
+                - generic [ref=e1018]: 一口气搞懂自装修：新建环节
+              - generic [ref=e1022] [cursor=pointer]:
+                - img [ref=e1024]
+                - generic [ref=e1032]: 一口气搞懂自装修：电路环节
+              - generic [ref=e1036] [cursor=pointer]:
+                - img [ref=e1038]
+                - generic [ref=e1046]: 一口气搞懂自装修：封窗环节
+              - generic [ref=e1050] [cursor=pointer]:
+                - img [ref=e1052]
+                - generic [ref=e1060]: 一口气搞懂自装修：水路环节
+              - generic [ref=e1064] [cursor=pointer]:
+                - img [ref=e1066]
+                - generic [ref=e1074]: 一口气搞懂自装修：防水环节
+              - generic [ref=e1078] [cursor=pointer]:
+                - img [ref=e1080]
+                - generic [ref=e1088]: 一口气搞懂自装修：二次排水与回填环节
+              - generic [ref=e1092] [cursor=pointer]:
+                - img [ref=e1094]
+                - generic [ref=e1102]: 一口气搞懂自装修：木工环节
+              - generic [ref=e1106] [cursor=pointer]:
+                - img [ref=e1108]
+                - generic [ref=e1116]: 一口气搞懂自装修：瓦工环节
+              - generic [ref=e1120] [cursor=pointer]:
+                - img [ref=e1122]
+                - generic [ref=e1130]: 一口气搞懂自装修：美缝环节
+              - generic [ref=e1134] [cursor=pointer]:
+                - img [ref=e1136]
+                - generic [ref=e1144]: 一口气搞懂自装修：油工环节
+              - generic [ref=e1148] [cursor=pointer]:
+                - img [ref=e1150]
+                - generic [ref=e1158]: 一口气搞懂自装修：瓷砖选择
+              - generic [ref=e1162] [cursor=pointer]:
+                - img [ref=e1164]
+                - generic [ref=e1172]: 一口气搞懂全屋定制
+              - generic [ref=e1176] [cursor=pointer]:
+                - img [ref=e1178]
+                - generic [ref=e1186]: 地暖安装全流程：从选材到施工
+              - generic [ref=e1190] [cursor=pointer]:
+                - img [ref=e1192]
+                - generic [ref=e1200]: 一口气搞懂自装修：空调选购篇
+              - generic [ref=e1204] [cursor=pointer]:
+                - img [ref=e1206]
+                - generic [ref=e1214]: 一口气搞懂自装修：暖通三方案对比
+              - generic [ref=e1218] [cursor=pointer]:
+                - img [ref=e1220]
+                - generic [ref=e1228]: 一口气搞懂自装修：中央空调安装全流程
+              - generic [ref=e1232] [cursor=pointer]:
+                - img [ref=e1234]
+                - generic [ref=e1242]: 思维导图合集
+            - generic [ref=e1246]:
+              - generic [ref=e1250] [cursor=pointer]:
+                - img [ref=e1252]
+                - generic [ref=e1260]: 全屋定制需求表
+              - generic [ref=e1264] [cursor=pointer]:
+                - img [ref=e1266]
+                - generic [ref=e1274]: 主材是上限，辅材是下限！一口气搞懂瓦工辅材选购
+              - generic [ref=e1278] [cursor=pointer]:
+                - img [ref=e1280]
+                - generic [ref=e1288]: 防水材料怎么选？看国标！选对耶斯来了它也漏不了！
+              - generic [ref=e1292] [cursor=pointer]:
+                - img [ref=e1294]
+                - generic [ref=e1302]: 材料没选对，甲醛翻两倍！一口气搞懂油工材料选购
+              - generic [ref=e1306] [cursor=pointer]:
+                - img [ref=e1308]
+                - generic [ref=e1316]: 植筋胶&钢筋 国标选购法！拒绝师傅墙裂推荐！
+              - generic [ref=e1320] [cursor=pointer]:
+                - img [ref=e1322]
+                - generic [ref=e1330]: 辅材差了墙能好？砌墙砖砂水泥大盘点，自装人必看！
+              - generic [ref=e1334] [cursor=pointer]:
+                - img [ref=e1336]
+                - generic [ref=e1344]: 冷热水管怎么选？ GBT18742+CJT258 双标对照
+              - generic [ref=e1348] [cursor=pointer]:
+                - img [ref=e1350]
+                - generic [ref=e1358]: 国标电路材料购指南，自装、半包业主必看！
+              - generic [ref=e1362] [cursor=pointer]:
+                - img [ref=e1364]
+                - generic [ref=e1372]: 吊顶问题安全频发：轻钢龙骨“偷工减料”成行业潜规则？
+              - generic [ref=e1376] [cursor=pointer]:
+                - img [ref=e1378]
+                - generic [ref=e1386]: 家装5大施工步骤 主材+辅材精准区分文档
+              - generic [ref=e1390] [cursor=pointer]:
+                - img [ref=e1392]
+                - generic [ref=e1400]: 全屋定制饰面不会选？四种工艺横向对比优缺点分析，拒绝踩坑！
+              - generic [ref=e1404] [cursor=pointer]:
+                - img [ref=e1406]
+                - generic [ref=e1414]: 全屋定制避坑!七种基材怎么选柜体、柜门怎么搭配最合理
+              - generic [ref=e1418] [cursor=pointer]:
+                - img [ref=e1420]
+                - generic [ref=e1428]: 全屋定制板材三大主流环保标准对比表（环保篇）
+              - generic [ref=e1432] [cursor=pointer]:
+                - img [ref=e1434]
+                - generic [ref=e1442]: 全屋定制封边工艺终极实测对比表
+              - generic [ref=e1446] [cursor=pointer]:
+                - img [ref=e1448]
+                - generic [ref=e1456]: 全屋定制合集
+              - generic [ref=e1460] [cursor=pointer]:
+                - img [ref=e1462]
+                - generic [ref=e1470]: 水电改造三步核心指南（设计交底+材料选购+施工验收）
+              - generic [ref=e1474] [cursor=pointer]:
+                - img [ref=e1476]
+                - generic [ref=e1484]: 吊顶施工全流程要点表
+              - generic [ref=e1488] [cursor=pointer]:
+                - img [ref=e1490]
+                - generic [ref=e1498]: 瓦工施工全流程避坑指南（四步闭环）
+              - generic [ref=e1502] [cursor=pointer]:
+                - img [ref=e1504]
+                - generic [ref=e1512]: 墙面装修（材料+施工+交底+验收）核心总结
+              - generic [ref=e1516] [cursor=pointer]:
+                - img [ref=e1518]
+                - generic [ref=e1526]: 主材入场规划表
+              - generic [ref=e1530] [cursor=pointer]:
+                - img [ref=e1532]
+                - generic [ref=e1540]: 施工进度表
+          - generic:
+            - textbox [active] [ref=e1543]
+            - generic:
+              - generic: 用户可以通过 control 加 ~ 打开或关闭无障碍功能
+        - toolbar [ref=e1636]:
+          - generic [ref=e1637]:
+            - button [ref=e1644]:
+              - generic [ref=e1646]: 打开链接
+            - button [ref=e1656]:
+              - button [ref=e1658]:
+                - img [ref=e1659]
+          - button "打开链接" [ref=e1672]:
+            - generic [ref=e1674]: 打开链接
+      - button "展开工具栏 (Ctrl+F1)" [ref=e1544] [cursor=pointer]:
+        - img [ref=e1545]
+      - generic [ref=e1546] [cursor=pointer]: 目录
+    - toolbar "状态栏" [ref=e1548]:
+      - button "目录" [ref=e1549]:
+        - img [ref=e1555] [cursor=pointer]
+      - button [ref=e1558]:
+        - generic [ref=e1569] [cursor=pointer]:
+          - img [ref=e1571]
+          - img [ref=e1574]
+      - button "1267 个字" [ref=e1575]:
+        - generic [ref=e1586]:
+          - text: 1267 个字
+          - img [ref=e1587]
+      - button "开始演示" [ref=e1588]:
+        - img [ref=e1594] [cursor=pointer]
+      - button [ref=e1597]
+      - button "全屏模式" [ref=e1602]:
+        - img [ref=e1608] [cursor=pointer]
+      - button "100%" [ref=e1610]:
+        - generic [ref=e1615]:
+          - img [ref=e1620] [cursor=pointer]
+          - generic [ref=e1625]: 100%
+          - img [ref=e1630] [cursor=pointer]
+  - generic [ref=e1634]: text
