@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # --- Retrieval (RAG) ---
     retrieval_top_k: int = 4
-    retrieval_min_score: float = 0.35
+    retrieval_min_score: float = 0.5
     knowledge_dir: str = "data/knowledge"
     index_dir: str = "data/index"
 
