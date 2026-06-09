@@ -1,25 +1,42 @@
 # Renovation Assistant — Backend
 
-FastAPI service powering the renovation Q&A assistant.
+FastAPI service powering the renovation Q&A assistant (LLM + RAG).
 
 ## Stack
 - Python 3.11+, FastAPI, Pydantic v2
-- LLM via an **OpenAI-compatible** Chat API (default: DeepSeek; swap to Qwen / GLM by changing `LLM_BASE_URL` / `LLM_MODEL` / `LLM_API_KEY`)
+- **LLM** via an OpenAI-compatible Chat API (default DeepSeek; swap to Qwen / GLM)
+- **RAG**: OpenAI-compatible embeddings (default SiliconFlow `BAAI/bge-m3`; e.g. Alibaba
+  DashScope `text-embedding-v4`) + a local NumPy vector store
 
 ## Setup
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows (Git Bash): source .venv/Scripts/activate
 pip install -r requirements-dev.txt
-cp .env.example .env             # then fill in LLM_API_KEY
+cp .env.example .env             # fill LLM_API_KEY and EMBEDDING_API_KEY/BASE_URL/MODEL
 ```
+
+## Build the knowledge index (RAG)
+```bash
+python -m app.rag.ingest         # embeds data/knowledge/*.md -> data/index/ (needs EMBEDDING_API_KEY)
+```
+Without an index the assistant still answers, but falls back to plain LLM output (no citations).
 
 ## Run
 ```bash
 uvicorn app.main:app --reload
-# Health:  GET  http://localhost:8000/health
-# Chat:    POST http://localhost:8000/chat   {"messages":[{"role":"user","content":"..."}]}
 ```
+
+## Endpoints
+- `GET  /health` → `{"status":"ok"}`
+- `POST /chat` → `{"reply": str, "sources": [{source, score}]}` (non-streaming)
+- `POST /chat/stream` → **Server-Sent Events** (streaming):
+  - `event: sources` · `data: {"sources":[{source,score}]}` — once, first
+  - `data: {"delta":"..."}` — many (token chunks)
+  - `event: done` · `data: {}` — last
+  - `event: error` · `data: {"detail":"..."}` — on mid-stream failure
+
+Request body for both: `{"messages":[{"role":"user","content":"..."}]}` (≤40 messages, ≤4000 chars each).
 
 ## Test & lint
 ```bash
@@ -29,14 +46,13 @@ ruff check .
 
 ## Layout
 ```
-app/main.py            FastAPI app + routes (health, chat)
+app/main.py            FastAPI app + routes (health, chat, chat/stream)
 app/config.py          settings loaded from env / .env
-app/schemas.py         request/response models
-app/prompts.py         system prompt (Chinese, user-facing)
-app/llm/base.py        LLMProvider protocol
-app/llm/openai_compatible.py   provider for OpenAI-compatible APIs
-app/llm/factory.py     build the configured provider
-tests/                 pytest (provider is faked, no network needed)
+app/schemas.py         request/response models + input limits
+app/prompts.py         system prompt + context builder (zh)
+app/llm/               LLM provider (Protocol + OpenAI-compatible impl + factory)
+app/rag/               embeddings, vector store, chunking, retriever, ingest, factory
+data/knowledge/*.md    seed knowledge (committed)
+data/index/            built vector index (gitignored)
+tests/                 pytest (providers/retriever faked; no network)
 ```
-
-> RAG (knowledge base + retrieval) arrives in PR2; streaming + multi-turn polish in PR3.

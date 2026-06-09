@@ -1,13 +1,17 @@
 """FastAPI application entrypoint.
 
-PR2 scope: the chat endpoint retrieves relevant knowledge (RAG), answers from it
-and cites sources, with an honest fallback when nothing relevant is found.
+PR3 scope: streaming chat (POST /chat/stream, Server-Sent Events) on top of the
+RAG pipeline, plus request-size guards and a configurable LLM timeout. The
+non-streaming POST /chat is kept for simple clients and tests.
 """
 
+import json
 import logging
+from collections.abc import AsyncIterator
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from app.config import get_settings
 from app.llm.base import LLMProvider
@@ -19,11 +23,11 @@ from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
 
-app = FastAPI(title="Renovation Assistant API", version="0.2.0")
+app = FastAPI(title="Renovation Assistant API", version="0.3.0")
 
 _settings = get_settings()
 if not _settings.llm_api_key:
-    logger.warning("LLM_API_KEY is not set; /chat will fail until it is configured.")
+    logger.warning("LLM_API_KEY is not set; chat will fail until it is configured.")
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,22 +70,64 @@ def _dedup_sources(context: RetrievedContext) -> list[Source]:
     return [Source(source=source, score=round(score, 3)) for source, score in best.items()]
 
 
-@app.post("/chat", response_model=ChatResponse)
-async def chat(
-    request: ChatRequest,
-    provider: LLMProvider = Depends(get_llm_provider),
-    retriever: Retriever = Depends(get_retriever),
-) -> ChatResponse:
-    """Answer a renovation question grounded in retrieved knowledge."""
+async def _build_conversation(
+    request: ChatRequest, retriever: Retriever
+) -> tuple[list[ChatMessage], list[Source]]:
+    """Retrieve knowledge and assemble the system + conversation messages."""
     context = await retriever.retrieve(_latest_user_message(request.messages))
     system_content = build_system_prompt(_format_context_blocks(context))
     conversation = [
         ChatMessage(role="system", content=system_content),
         *_conversation(request.messages),
     ]
+    return conversation, _dedup_sources(context)
+
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat(
+    request: ChatRequest,
+    provider: LLMProvider = Depends(get_llm_provider),
+    retriever: Retriever = Depends(get_retriever),
+) -> ChatResponse:
+    """Answer a renovation question grounded in retrieved knowledge (non-streaming)."""
+    conversation, sources = await _build_conversation(request, retriever)
     try:
         reply = await provider.chat(conversation)
     except Exception as exc:  # noqa: BLE001 - surface any upstream failure as 502
         logger.exception("LLM provider call failed")
         raise HTTPException(status_code=502, detail="LLM provider error") from exc
-    return ChatResponse(reply=reply, sources=_dedup_sources(context))
+    return ChatResponse(reply=reply, sources=sources)
+
+
+def _sse(data: dict, event: str | None = None) -> str:
+    """Format a Server-Sent Events message."""
+    payload = json.dumps(data, ensure_ascii=False)
+    prefix = f"event: {event}\n" if event else ""
+    return f"{prefix}data: {payload}\n\n"
+
+
+@app.post("/chat/stream")
+async def chat_stream(
+    request: ChatRequest,
+    provider: LLMProvider = Depends(get_llm_provider),
+    retriever: Retriever = Depends(get_retriever),
+) -> StreamingResponse:
+    """Stream the answer over SSE: a `sources` event first, then `delta`s, then `done`."""
+    conversation, sources = await _build_conversation(request, retriever)
+
+    async def event_stream() -> AsyncIterator[str]:
+        yield _sse({"sources": [source.model_dump() for source in sources]}, event="sources")
+        try:
+            async for delta in provider.chat_stream(conversation):
+                yield _sse({"delta": delta})
+        except Exception:  # noqa: BLE001 - report mid-stream failures as an SSE event
+            logger.exception("LLM streaming failed")
+            yield _sse({"detail": "LLM provider error"}, event="error")
+            return
+        yield _sse({}, event="done")
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"},
+    )

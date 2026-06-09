@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://api.deepseek.com"
     llm_model: str = "deepseek-chat"
 
+    # Request timeout (seconds) applied to LLM chat calls.
+    request_timeout_seconds: float = 60.0
+
     # --- Embedding provider (OpenAI-compatible /embeddings). ---
     # Defaults target SiliconFlow hosting BAAI/bge-m3 (strong Chinese retrieval).
     # NOTE: DeepSeek has no embeddings endpoint, so this needs its own key.

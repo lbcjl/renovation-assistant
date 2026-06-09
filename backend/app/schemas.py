@@ -1,6 +1,10 @@
 """Request/response schemas for the API."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+# Guard rails on incoming requests (size limits; cheap abuse/injection mitigation).
+_MAX_MESSAGES = 40
+_MAX_MESSAGE_CHARS = 4000
 
 
 class ChatMessage(BaseModel):
@@ -11,9 +15,19 @@ class ChatMessage(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    """Payload for the /chat endpoint."""
+    """Payload for the chat endpoints."""
 
-    messages: list[ChatMessage] = Field(..., min_length=1)
+    messages: list[ChatMessage] = Field(..., min_length=1, max_length=_MAX_MESSAGES)
+
+    @field_validator("messages")
+    @classmethod
+    def _limit_message_size(cls, messages: list[ChatMessage]) -> list[ChatMessage]:
+        # Only validates incoming client messages; the server-built system
+        # message is constructed separately and is not subject to this cap.
+        for message in messages:
+            if len(message.content) > _MAX_MESSAGE_CHARS:
+                raise ValueError(f"message content exceeds {_MAX_MESSAGE_CHARS} characters")
+        return messages
 
 
 class Source(BaseModel):

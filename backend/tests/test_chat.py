@@ -15,6 +15,16 @@ def test_chat_rejects_empty_messages(client: TestClient) -> None:
     assert client.post("/chat", json={"messages": []}).status_code == 422
 
 
+def test_chat_rejects_too_many_messages(client: TestClient) -> None:
+    messages = [{"role": "user", "content": "x"} for _ in range(41)]
+    assert client.post("/chat", json={"messages": messages}).status_code == 422
+
+
+def test_chat_rejects_too_long_message(client: TestClient) -> None:
+    messages = [{"role": "user", "content": "x" * 4001}]
+    assert client.post("/chat", json={"messages": messages}).status_code == 422
+
+
 def test_chat_without_index_uses_fallback(client: TestClient, fake_provider: FakeProvider) -> None:
     response = client.post(
         "/chat", json={"messages": [{"role": "user", "content": "随便问个问题"}]}

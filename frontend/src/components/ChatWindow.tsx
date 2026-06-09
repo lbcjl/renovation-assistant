@@ -1,6 +1,18 @@
 import { useState, type KeyboardEvent } from 'react'
-import { postChat } from '../api/chat'
+import { streamChat } from '../api/chat'
 import type { ChatMessage } from '../types'
+
+function patchLast(
+  messages: ChatMessage[],
+  patch: (message: ChatMessage) => ChatMessage,
+): ChatMessage[] {
+  if (messages.length === 0) {
+    return messages
+  }
+  const next = messages.slice()
+  next[next.length - 1] = patch(next[next.length - 1])
+  return next
+}
 
 export function ChatWindow() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -14,17 +26,34 @@ export function ChatWindow() {
       return
     }
 
-    const nextMessages: ChatMessage[] = [...messages, { role: 'user', content: text }]
-    setMessages(nextMessages)
+    const history: ChatMessage[] = [...messages, { role: 'user', content: text }]
+    // Append an empty assistant bubble that fills in as deltas stream.
+    setMessages([...history, { role: 'assistant', content: '', sources: [] }])
     setInput('')
     setError(null)
     setLoading(true)
 
     try {
-      const { reply, sources } = await postChat(nextMessages)
-      setMessages([...nextMessages, { role: 'assistant', content: reply, sources }])
+      await streamChat(history, {
+        onSources: (sources) => {
+          setMessages((prev) => patchLast(prev, (message) => ({ ...message, sources })))
+        },
+        onDelta: (delta) => {
+          setMessages((prev) =>
+            patchLast(prev, (message) => ({ ...message, content: message.content + delta })),
+          )
+        },
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : '出错了，请稍后重试')
+      // Drop the empty assistant bubble if nothing streamed in.
+      setMessages((prev) => {
+        const last = prev[prev.length - 1]
+        if (last && last.role === 'assistant' && last.content === '') {
+          return prev.slice(0, -1)
+        }
+        return prev
+      })
     } finally {
       setLoading(false)
     }
@@ -45,17 +74,20 @@ export function ChatWindow() {
             问我任何装修问题，比如「150 平米大概要花多少钱？」「是先做水电还是先贴砖？」
           </p>
         )}
-        {messages.map((message, index) => (
-          <div key={index} className={`chat__message chat__message--${message.role}`}>
-            {message.content}
-            {message.sources && message.sources.length > 0 && (
-              <div className="chat__sources">
-                依据：{message.sources.map((source) => source.source).join('、')}
-              </div>
-            )}
-          </div>
-        ))}
-        {loading && <div className="chat__message chat__message--assistant">思考中…</div>}
+        {messages.map((message, index) => {
+          const isStreaming =
+            loading && index === messages.length - 1 && message.role === 'assistant'
+          return (
+            <div key={index} className={`chat__message chat__message--${message.role}`}>
+              {message.content || (isStreaming ? '思考中…' : '')}
+              {message.sources && message.sources.length > 0 && (
+                <div className="chat__sources">
+                  依据：{message.sources.map((source) => source.source).join('、')}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
 
       {error && <p className="chat__error">{error}</p>}

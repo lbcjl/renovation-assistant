@@ -19,4 +19,5 @@ def get_llm_provider() -> LLMProvider:
         api_key=settings.llm_api_key,
         base_url=settings.llm_base_url,
         model=settings.llm_model,
+        timeout=settings.request_timeout_seconds,
     )

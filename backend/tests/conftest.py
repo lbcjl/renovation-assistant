@@ -1,10 +1,10 @@
 """Shared pytest fixtures.
 
-The chat endpoint depends on ``get_llm_provider`` and ``get_retriever``; tests
+The chat endpoints depend on ``get_llm_provider`` and ``get_retriever``; tests
 override both with fakes so no network access or API key is required.
 """
 
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -26,15 +26,21 @@ def fake_vector(text: str) -> list[float]:
 
 
 class FakeProvider:
-    """In-memory LLM provider for tests."""
+    """In-memory LLM provider for tests (non-streaming and streaming)."""
 
     def __init__(self, reply: str = "测试回复") -> None:
         self._reply = reply
+        self._stream_pieces = ["测试", "回复"]
         self.received: list[ChatMessage] | None = None
 
     async def chat(self, messages: list[ChatMessage]) -> str:
         self.received = messages
         return self._reply
+
+    async def chat_stream(self, messages: list[ChatMessage]) -> AsyncIterator[str]:
+        self.received = messages
+        for piece in self._stream_pieces:
+            yield piece
 
 
 class FakeEmbeddings:
