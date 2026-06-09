@@ -1,51 +1,33 @@
 # Hook Guidelines
 
-> How hooks are used in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's hook conventions here.
-
-Questions to answer:
-- What custom hooks do you have?
-- How do you handle data fetching?
-- What are the naming conventions?
-- How do you share stateful logic?
--->
-
-(To be filled by the team)
+> Custom hook patterns.
 
 ---
 
 ## Custom Hook Patterns
 
-<!-- How to create and structure custom hooks -->
-
-(To be filled by the team)
-
----
+- Use built-in hooks (`useState`, etc.) for local UI state. The MVP keeps chat state in the
+  owning component (`ChatWindow`) — see [state-management](./state-management.md).
+- **Extract a custom hook only when logic is reused** across ≥2 components or becomes complex
+  (e.g. a future `useChat()` wrapping message state + `postChat`).
+- Side effects belong in `useEffect`; data fetching still goes through `src/api/` functions.
 
 ## Data Fetching
 
-<!-- How data fetching is handled (React Query, SWR, etc.) -->
-
-(To be filled by the team)
-
----
+- No data-fetching library (React Query/SWR) in the MVP. Calls are made directly through
+  `src/api/` functions from event handlers; loading/error state is local `useState`.
 
 ## Naming Conventions
 
-<!-- Hook naming rules (use*, etc.) -->
+- Custom hooks are named `useXxx` and live in `src/hooks/`.
 
-(To be filled by the team)
+## Current state
 
----
+No custom hooks yet (MVP). When the first one is added (likely `useChat`), document its
+contract here with a real example.
 
 ## Common Mistakes
 
-<!-- Hook-related mistakes your team has made -->
-
-(To be filled by the team)
+- ❌ A hook not prefixed with `use`.
+- ❌ Calling `fetch()` inside a hook directly (route it through `src/api/`).
+- ❌ Premature extraction of a hook used by only one component.

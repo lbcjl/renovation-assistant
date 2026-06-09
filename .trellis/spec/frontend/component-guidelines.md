@@ -1,59 +1,42 @@
 # Component Guidelines
 
-> How components are built in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's component conventions here.
-
-Questions to answer:
-- What component patterns do you use?
-- How are props defined?
-- How do you handle composition?
-- What accessibility standards apply?
--->
-
-(To be filled by the team)
+> Patterns for React components in this project.
 
 ---
 
 ## Component Structure
 
-<!-- Standard structure of a component file -->
-
-(To be filled by the team)
-
----
+- **Function components only**, with typed props (`interface XxxProps`). No class components.
+- **No data fetching in components** — call a typed function from `src/api/` (e.g.
+  `ChatWindow` calls `postChat`). Components orchestrate; `api/` talks to the network.
+- **Handle every UI state explicitly**: empty, loading, error, and success. `ChatWindow`
+  renders an empty-state placeholder, a "思考中…" loading bubble, and an error line.
 
 ## Props Conventions
 
-<!-- How props should be defined and typed -->
+- Type event handlers; import React event types as types:
+  `import { useState, type KeyboardEvent } from 'react'`.
+- For fire-and-forget async in a handler, mark it: `onClick={() => void handleSend()}`.
 
-(To be filled by the team)
+## Example (real code — `frontend/src/components/ChatWindow.tsx`)
 
----
+```tsx
+try {
+  const reply = await postChat(nextMessages)
+  setMessages([...nextMessages, { role: 'assistant', content: reply }])
+} catch (err) {
+  setError(err instanceof Error ? err.message : '出错了，请稍后重试')
+} finally {
+  setLoading(false)
+}
+```
 
 ## Styling Patterns
 
-<!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Accessibility
-
-<!-- A11y requirements and patterns -->
-
-(To be filled by the team)
-
----
+- Plain CSS with BEM-style class names in `src/index.css` (e.g. `chat__message--user`).
 
 ## Common Mistakes
 
-<!-- Component-related mistakes your team has made -->
-
-(To be filled by the team)
+- ❌ `any`-typed props.
+- ❌ `fetch()` / business logic embedded in JSX.
+- ❌ Floating promises (always `await` or `void`).

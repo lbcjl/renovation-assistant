@@ -1,51 +1,31 @@
 # Logging Guidelines
 
-> How logging is done in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's logging conventions here.
-
-Questions to answer:
-- What logging library do you use?
-- What are the log levels and when to use each?
-- What should be logged?
-- What should NOT be logged (PII, secrets)?
--->
-
-(To be filled by the team)
+> Structured, secret-safe logging for the backend.
 
 ---
 
 ## Log Levels
 
-<!-- When to use each level: debug, info, warn, error -->
+- Use the stdlib `logging` module. Module logger: `logging.getLogger("renovation_assistant")`.
+- `warning` — recoverable misconfiguration (e.g. missing API key at startup).
+- `exception` — a caught error at the API boundary (logs the traceback).
+- `info` — notable lifecycle events (index loaded, N chunks indexed).
+- `print()` is only acceptable in **CLI entrypoints** (e.g. `app/rag/ingest.py`), never in
+  request handlers.
 
-(To be filled by the team)
+## Example (real code — `app/main.py`)
 
----
+```python
+logger = logging.getLogger("renovation_assistant")
 
-## Structured Logging
-
-<!-- Log format, required fields -->
-
-(To be filled by the team)
-
----
-
-## What to Log
-
-<!-- Important events to log -->
-
-(To be filled by the team)
-
----
+if not _settings.llm_api_key:
+    logger.warning("LLM_API_KEY is not set; /chat will fail until it is configured.")
+...
+logger.exception("LLM provider call failed")
+```
 
 ## What NOT to Log
 
-<!-- Sensitive data, PII, secrets -->
-
-(To be filled by the team)
+- ❌ API keys or any `.env` values.
+- ❌ Full LLM prompts/responses at `info` in production (may contain user data).
+- ❌ Full request bodies that may contain user PII.

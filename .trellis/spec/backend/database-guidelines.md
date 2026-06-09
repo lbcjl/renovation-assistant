@@ -1,51 +1,31 @@
 # Database Guidelines
 
-> Database patterns and conventions for this project.
+> Data persistence patterns. **The MVP has no relational database.**
 
 ---
 
-## Overview
+## Current state (MVP)
 
-<!--
-Document your project's database conventions here.
+There is **no SQL database**. Knowledge persistence is file-based:
 
-Questions to answer:
-- What ORM/query library do you use?
-- How are migrations managed?
-- What are the naming conventions for tables/columns?
-- How do you handle transactions?
--->
+| Data | Location | Tracked in git? |
+|------|----------|-----------------|
+| Source knowledge docs | `backend/data/knowledge/*.md` | ✅ committed |
+| Built vector index | `backend/data/index/` (`embeddings.npy` + `documents.json`) | ❌ gitignored (rebuildable) |
 
-(To be filled by the team)
+- The vector "store" is `app/rag/store.py` (`VectorStore`): an in-memory NumPy matrix with
+  cosine search, persisted via `save()` / `load()`.
+- Rebuild the index with: `python -m app.rag.ingest` (requires `EMBEDDING_API_KEY`).
 
----
+## When a database is introduced later
 
-## Query Patterns
-
-<!-- How should queries be written? Batch operations? -->
-
-(To be filled by the team)
-
----
-
-## Migrations
-
-<!-- How to create and run migrations -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Table names, column names, index names -->
-
-(To be filled by the team)
-
----
+Document here, before writing code:
+- ORM/driver choice and why.
+- Migration tool and workflow.
+- Naming conventions (tables, columns), and query patterns.
+- How it relates to / replaces the file-based index above (e.g. `sqlite-vec`, `pgvector`, Qdrant).
 
 ## Common Mistakes
 
-<!-- Database-related mistakes your team has made -->
-
-(To be filled by the team)
+- ❌ Committing the built index (`data/index/`) — it is derived from the docs.
+- ❌ Storing secrets or user PII inside the index/documents.

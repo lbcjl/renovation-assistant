@@ -1,51 +1,34 @@
 # Quality Guidelines
 
-> Code quality standards for frontend development.
-
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
-
----
-
-## Forbidden Patterns
-
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
+> Code standards and checks for the frontend.
 
 ---
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
+- **No `any`, no non-null assertions, no unused vars** (enforced by `tsconfig`).
+- **Accessibility**: interactive controls are reachable and keyboard-friendly (e.g. Enter to
+  send, Shift+Enter for newline in `ChatWindow`); disable buttons while loading.
 
-(To be filled by the team)
+## Linting & Build
 
----
+- **Lint**: ESLint flat config (`eslint.config.js`) with `typescript-eslint` recommended.
+  Run `npm run lint` — must be clean (0 errors).
+- **Type-check / build**: `npm run build` (`tsc -b && vite build`) must pass with no type
+  errors. `npm run typecheck` (`tsc -b`) for type-check only.
+
+```bash
+npm run lint
+npm run build   # tsc -b && vite build
+```
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
+No frontend tests in the MVP yet. When component logic grows, add **Vitest +
+@testing-library/react** and document patterns here.
 
-(To be filled by the team)
+## Forbidden Patterns
 
----
-
-## Code Review Checklist
-
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- ❌ Disabling an ESLint rule inline without a justifying comment.
+- ❌ Committing `node_modules/` or `dist/`.
+- ❌ Shipping `console.log` left over from debugging.

@@ -1,51 +1,39 @@
 # Quality Guidelines
 
-> Code quality standards for backend development.
-
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
-
----
-
-## Forbidden Patterns
-
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
+> Code standards and testing requirements for the backend.
 
 ---
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
+- **Python 3.11+** with full type hints on public functions. Use `list[X]`, `X | None`.
+- **Config** via `pydantic-settings` (`app/config.py`), read from env / `.env`. Never hardcode
+  secrets or URLs.
+- **Provider pattern**: external services sit behind a `Protocol` + a `factory` cached with
+  `@lru_cache`, so they are swappable and testable (`app/llm/`, `app/rag/`).
+- **Async**: route handlers and provider calls are `async`; use `AsyncOpenAI` (no blocking I/O
+  in async handlers).
 
-(To be filled by the team)
+## Linting
 
----
+- `ruff` (config in `pyproject.toml`: rules `E,F,I,UP,B`, line length 100).
+  Run `ruff check .` — must be clean.
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
+- Every endpoint and every RAG component has tests (`backend/tests/`).
+- **No network or API key in tests** — override providers with fakes via
+  `app.dependency_overrides` (see `tests/conftest.py` `FakeProvider`).
+- Cover edge cases: empty retrieval, empty `messages` (→ 422), score-threshold fallback.
 
-(To be filled by the team)
+```python
+# tests/conftest.py
+app.dependency_overrides[get_llm_provider] = lambda: fake_provider
+```
 
----
+## Forbidden Patterns
 
-## Code Review Checklist
-
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- ❌ Hardcoded secrets / base URLs (use `Settings`).
+- ❌ Synchronous blocking calls inside `async` handlers.
+- ❌ `except Exception` anywhere except the API boundary.
+- ❌ Committing `.env` or `data/index/`.

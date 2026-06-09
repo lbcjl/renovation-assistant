@@ -1,51 +1,32 @@
 # Type Safety
 
-> Type safety patterns in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's type safety conventions here.
-
-Questions to answer:
-- What type system do you use?
-- How are types organized?
-- What validation library do you use?
-- How do you handle type inference?
--->
-
-(To be filled by the team)
+> TypeScript conventions for the frontend.
 
 ---
 
 ## Type Organization
 
-<!-- Where types are defined, shared types vs local types -->
-
-(To be filled by the team)
-
----
+- **Strict mode on** (`tsconfig.app.json`: `strict`, `noUnusedLocals`, `noUnusedParameters`).
+- **Shared domain types in `src/types.ts`**; use union types for closed sets
+  (e.g. `type ChatRole = 'user' | 'assistant'`).
+- **Type-only imports**: `import type { ChatMessage } from '../types'`.
+- **Env vars** are typed in `src/vite-env.d.ts`.
 
 ## Validation
 
-<!-- Runtime validation patterns (Zod, Yup, io-ts, etc.) -->
+- No runtime validation library (Zod/Yup) in the MVP. API responses are typed and narrowed at
+  the boundary; a single `as <Type>` is acceptable only for a known JSON response shape.
 
-(To be filled by the team)
+## Example (real code — `frontend/src/api/chat.ts`)
 
----
-
-## Common Patterns
-
-<!-- Type utilities, generics, type guards -->
-
-(To be filled by the team)
-
----
+```ts
+interface ChatResponse { reply: string }
+const data = (await response.json()) as ChatResponse
+return data.reply
+```
 
 ## Forbidden Patterns
 
-<!-- any, type assertions, etc. -->
-
-(To be filled by the team)
+- ❌ `any` (use a precise type or `unknown` + narrowing).
+- ❌ Non-null assertion `value!` (check for null instead — see `main.tsx` root check).
+- ❌ Untyped `fetch().then(r => r.json())` results.

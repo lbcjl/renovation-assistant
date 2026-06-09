@@ -1,51 +1,30 @@
 # State Management
 
-> How state is managed in this project.
+> Where state lives and how it flows.
 
 ---
 
-## Overview
+## State Categories (MVP)
 
-<!--
-Document your project's state management conventions here.
-
-Questions to answer:
-- What state management solution do you use?
-- How is local vs global state decided?
-- How do you handle server state?
-- What are the patterns for derived state?
--->
-
-(To be filled by the team)
-
----
-
-## State Categories
-
-<!-- Local state, global state, server state, URL state -->
-
-(To be filled by the team)
-
----
+- **Local component state only** (`useState`). No global store yet.
+- **Server state** (the chat history/messages) is owned by the component that renders it
+  (`ChatWindow`), not lifted higher than necessary.
+- **URL state**: none yet (single page).
 
 ## When to Use Global State
 
-<!-- Criteria for promoting state to global -->
+- Introduce **Context or a store** only when shared state is genuinely needed (e.g. user
+  settings, selected model, auth) — and document the choice here at that time.
 
-(To be filled by the team)
+## Example (real code — `frontend/src/components/ChatWindow.tsx`)
 
----
-
-## Server State
-
-<!-- How server data is cached and synchronized -->
-
-(To be filled by the team)
-
----
+```tsx
+const [messages, setMessages] = useState<ChatMessage[]>([])
+const [input, setInput] = useState('')
+```
 
 ## Common Mistakes
 
-<!-- State management mistakes your team has made -->
-
-(To be filled by the team)
+- ❌ Lifting all state into `App` "just in case".
+- ❌ Global mutable singletons for state.
+- ❌ Reaching for a state library before there is shared cross-component state.
