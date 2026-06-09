@@ -8,6 +8,10 @@ from typing import Protocol
 
 from openai import AsyncOpenAI
 
+# Max texts per embeddings request. DashScope text-embedding caps this at 10;
+# batching keeps us within provider limits regardless of corpus size.
+_BATCH_SIZE = 10
+
 
 class EmbeddingProvider(Protocol):
     """Interface for turning text into vectors."""
@@ -41,12 +45,15 @@ class OpenAICompatibleEmbeddings:
         return self._client
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
-        response = await self._client_or_create().embeddings.create(
-            model=self._model, input=texts
-        )
-        # The API may reorder; sort by index to be safe.
-        ordered = sorted(response.data, key=lambda item: item.index)
-        return [item.embedding for item in ordered]
+        client = self._client_or_create()
+        vectors: list[list[float]] = []
+        for start in range(0, len(texts), _BATCH_SIZE):
+            batch = texts[start : start + _BATCH_SIZE]
+            response = await client.embeddings.create(model=self._model, input=batch)
+            # The API may reorder; sort by index within the batch to be safe.
+            ordered = sorted(response.data, key=lambda item: item.index)
+            vectors.extend(item.embedding for item in ordered)
+        return vectors
 
     async def embed_query(self, text: str) -> list[float]:
         vectors = await self.embed([text])
