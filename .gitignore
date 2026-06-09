@@ -22,5 +22,18 @@ dist/
 # Knowledge base build artifacts (PR2+)
 backend/data/index/
 
+# Database files (generated at runtime)
+backend/data/database.db
+*.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Trellis workspace (session notes, not code)
+.trellis/workspace/
+
+# User uploaded data files
+data/
+
 # Claude Code harness-installed global skills (plugin tooling, not part of this project)
 .claude/skills/
