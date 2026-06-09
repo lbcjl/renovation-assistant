@@ -1,4 +1,6 @@
 import { useState, type KeyboardEvent } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { streamChat } from '../api/chat'
 import type { ChatMessage } from '../types'
 
@@ -96,8 +98,12 @@ export function ChatWindow() {
             return (
               <div key={index} className={`chat__row chat__row--${message.role}`}>
                 <div className="chat__bubble">
-                  {message.content ? (
+                  {message.role === 'user' ? (
                     message.content
+                  ) : message.content ? (
+                    <div className="chat__md">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                    </div>
                   ) : isStreaming ? (
                     <span className="chat__typing" role="status" aria-label="思考中">
                       <span />
