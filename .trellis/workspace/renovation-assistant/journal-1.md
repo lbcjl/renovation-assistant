@@ -69,3 +69,52 @@ Homeowner-facing Web renovation Q&A assistant (domestic LLM + RAG), built and ve
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: PR3: streaming chat over SSE + request guards
+
+**Date**: 2026-06-09
+**Task**: PR3: streaming chat over SSE + request guards
+
+### Summary
+
+SSE token streaming (typewriter UX) with live source citations, request-size guards and a configurable LLM timeout; verified end-to-end.
+
+### Main Changes
+
+PR3 在 PR1/PR2 基础上加入流式输出与基础加固，MVP 三步（脚手架 → RAG → 流式）全部完成并真实跑通。
+
+| 项 | 内容 |
+|----|------|
+| SSE 流式 | `POST /chat/stream`：先发 `sources` 事件 → 逐 token `delta` → `done`；中途出错发 `error` 事件。非流式 `/chat` 保留 |
+| Provider | `LLMProvider.chat_stream`（OpenAI 流式 `stream=True`）；可配置请求超时 `request_timeout_seconds` |
+| 加固 | 请求限制：≤40 条消息、每条 ≤4000 字（超限返回 422） |
+| 前端 | 消费 SSE 打字机渲染（空助手气泡逐字填充）+ 实时「依据」来源标注 |
+| 测试 | `/chat/stream` 流式测试 + 请求限制测试；pytest 20 项全过；前端 eslint + build 通过 |
+
+**验证**：真实 DashScope `text-embedding-v4` + DeepSeek 流式——`/chat/stream` 实测先发 sources 事件（4 条相关来源）+ 222 个 delta + done。
+
+**踩坑**：后台重启 uvicorn 时若不显式 `cd` 到 `backend/`，会因 cwd 残留在 `frontend/` 而 exit 127（找不到 `.venv`）；已固定为命令内显式 cd。
+
+**提交**：`e2d02d2`（feat: stream chat responses over SSE）。
+
+**后续**：公开资料整理扩充知识库（含版权处理）、更多种子知识与检索精度调优。
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e2d02d2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

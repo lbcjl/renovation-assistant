@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 1
+- **Total Sessions**: 2
 - **Last Active**: 2026-06-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~71 | Active |
+| `journal-1.md` | ~120 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits |
 |---|------|-------|---------|
+| 2 | 2026-06-09 | PR3: streaming chat over SSE + request guards | `e2d02d2` |
 | 1 | 2026-06-09 | Renovation assistant MVP: brainstorm, PR1 scaffold, spec bootstrap, PR2 RAG, tuning | `7c65f8b`, `324a4fe`, `3365013`, `b4443fc`, `af0373e`, `50e8e16` |
 <!-- @@@/auto:session-history -->
 
