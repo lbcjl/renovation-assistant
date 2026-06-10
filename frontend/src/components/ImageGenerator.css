@@ -1,8 +1,12 @@
 .image-generator {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 16px);
+  box-shadow: var(--shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
 }
 
 .image-generator__title {

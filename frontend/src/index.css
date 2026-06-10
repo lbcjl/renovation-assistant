@@ -73,11 +73,58 @@ body,
   color: var(--muted);
 }
 
+/* ---- Page tabs ---- */
+.app__nav {
+  display: flex;
+  gap: 8px;
+}
+
+.app__tab {
+  padding: 8px 22px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.app__tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.app__tab--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.app__tab--active:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #fff;
+}
+
 /* ---- Chat card ---- */
 .app__main {
   display: flex;
   flex: 1;
   min-height: 0;
+}
+
+.app__page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.app__page--hidden {
+  display: none;
 }
 
 .chat {

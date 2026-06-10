@@ -1,7 +1,12 @@
+import { useState } from 'react'
 import { ChatWindow } from './components/ChatWindow'
 import { ImageGenerator } from './components/ImageGenerator'
 
+type Page = 'chat' | 'image'
+
 function App() {
+  const [page, setPage] = useState<Page>('chat')
+
   return (
     <div className="app">
       <header className="app__header">
@@ -31,9 +36,26 @@ function App() {
           <span className="app__username">测试模式</span>
         </div>
       </header>
+      <nav className="app__nav" aria-label="功能页面切换">
+        <button
+          className={`app__tab${page === 'chat' ? ' app__tab--active' : ''}`}
+          onClick={() => setPage('chat')}
+        >
+          装修问答
+        </button>
+        <button
+          className={`app__tab${page === 'image' ? ' app__tab--active' : ''}`}
+          onClick={() => setPage('image')}
+        >
+          AI 效果图
+        </button>
+      </nav>
       <main className="app__main">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
+        {/* Both pages stay mounted so chat history and generated images survive tab switches. */}
+        <div className={`app__page${page === 'chat' ? '' : ' app__page--hidden'}`}>
           <ChatWindow />
+        </div>
+        <div className={`app__page${page === 'image' ? '' : ' app__page--hidden'}`}>
           <ImageGenerator />
         </div>
       </main>
