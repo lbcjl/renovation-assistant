@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 3
-- **Last Active**: 2026-06-09
+- **Total Sessions**: 4
+- **Last Active**: 2026-06-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~166 | Active |
+| `journal-1.md` | ~217 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits |
 |---|------|-------|---------|
+| 4 | 2026-06-10 | UI split, runtime provider settings, and full migration to Next.js | `470f3c3`, `187bae9`, `0890624`, `01d4ece`, `1d01225` |
 | 3 | 2026-06-09 | Expand RAG knowledge base from public sources | `ec06cbd` |
 | 2 | 2026-06-09 | PR3: streaming chat over SSE + request guards | `e2d02d2` |
 | 1 | 2026-06-09 | Renovation assistant MVP: brainstorm, PR1 scaffold, spec bootstrap, PR2 RAG, tuning | `7c65f8b`, `324a4fe`, `3365013`, `b4443fc`, `af0373e`, `50e8e16` |
