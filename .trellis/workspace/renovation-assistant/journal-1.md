@@ -164,3 +164,54 @@ Added 5 paraphrased-and-cited knowledge docs (index 13 -> 23 chunks / 11 docs); 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: UI split, runtime provider settings, and full migration to Next.js
+
+**Date**: 2026-06-10
+**Task**: UI split, runtime provider settings, and full migration to Next.js
+
+### Summary
+
+(Add summary)
+
+### Main Changes
+
+| Work | Description |
+|------|-------------|
+| Image gen reliability | Retry transient provider failures (3 attempts, backoff), 503/502 mapping, friendly errors, textarea disabled while generating |
+| UI split | Chat and image generation separated into tab pages (both stay mounted) |
+| LLM relay switch | backend .env moved to relay https://muyuan.do/v1, default model claude-opus-4-6 (verified live) |
+| Runtime settings page | New 设置 tab: edit base URL/API key (masked), probe endpoint /models, pick model, persist per provider (llm/image) to provider_config.json overriding .env without restart |
+| Next.js migration | Big-bang rewrite: FastAPI + Vite replaced by single Next.js 15 app at repo root. Vercel AI SDK (ai@6 + useChat) chat streaming with RAG sources as data part; lib/ ports of config, runtime-config, RAG (store/embeddings/chunking/retriever/ingest), image retry service, file parsing (unpdf/mammoth/xlsx); 10 API routes; UI fully ported; knowledge (62 docs) migrated and index rebuilt (229 chunks); auth cancelled entirely; 50 Vitest tests; specs/README rewritten; frontend/ and backend/ deleted |
+
+**Key decisions** (user-confirmed): one-shot migration, direct replacement at repo root, login feature cancelled (not ported), Vercel AI SDK over plain openai SDK.
+
+**Behavior contracts preserved**: image retry matrix, settings error matrix + key masking + section isolation, chat guards (40 msgs/4000 chars), byte-identical Chinese system prompt.
+
+**Notable changes**: validation errors 422→400 (same client messages); uploads served via /api/files/{id}/content (static mount removed); old test uploads not migrated; pre-existing test_auth failure became moot (auth removed with the Python stack).
+
+**Run**: npm install && npm run ingest && npm run dev (port 3000). Env in .env.local (see .env.example).
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `470f3c3` | (see git log) |
+| `187bae9` | (see git log) |
+| `0890624` | (see git log) |
+| `01d4ece` | (see git log) |
+| `1d01225` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

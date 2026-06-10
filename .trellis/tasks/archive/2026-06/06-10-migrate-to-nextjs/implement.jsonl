@@ -1,0 +1,6 @@
+{"file": ".trellis/workflow.md", "reason": "Project workflow and conventions"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend development guide"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend development guide"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "API error contracts (retry/503/502, settings error matrix) must be preserved in Next.js route handlers"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "React component patterns carry over to Next.js client components"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "strict TS, no any, typed API conventions"}
