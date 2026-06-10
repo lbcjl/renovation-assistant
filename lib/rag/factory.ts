@@ -49,14 +49,24 @@ function loadStore(): VectorStore {
 }
 
 export function getRetriever(): Retriever {
-  if (globalCache.__renovationRetriever === undefined) {
-    const settings = getSettings();
-    globalCache.__renovationRetriever = new Retriever(loadStore(), getEmbeddings(), {
-      topK: settings.retrievalTopK,
-      minScore: settings.retrievalMinScore,
-    });
+  const cached = globalCache.__renovationRetriever;
+  const settings = getSettings();
+  // A cached retriever may hold the empty placeholder store created before
+  // any index existed. If an index has since been built on disk (e.g.
+  // `npm run ingest` while the server is running), reload instead.
+  const staleEmptyStore =
+    cached !== undefined &&
+    cached.store.size === 0 &&
+    fs.existsSync(path.join(settings.indexDir, DOCUMENTS_FILE));
+  if (cached !== undefined && !staleEmptyStore) {
+    return cached;
   }
-  return globalCache.__renovationRetriever;
+  const retriever = new Retriever(loadStore(), getEmbeddings(), {
+    topK: settings.retrievalTopK,
+    minScore: settings.retrievalMinScore,
+  });
+  globalCache.__renovationRetriever = retriever;
+  return retriever;
 }
 
 /**
