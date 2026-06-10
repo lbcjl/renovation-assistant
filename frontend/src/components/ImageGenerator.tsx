@@ -20,8 +20,8 @@ export function ImageGenerator() {
       const url = await generateImage(prompt)
       setImageUrl(url)
     } catch (err) {
-      setError('生成失败，请重试')
-      console.error(err)
+      const errorMessage = err instanceof Error ? err.message : '生成失败，请重试'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

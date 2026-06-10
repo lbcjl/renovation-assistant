@@ -1,66 +1,7 @@
-import { useEffect, useState } from 'react'
 import { ChatWindow } from './components/ChatWindow'
 import { ImageGenerator } from './components/ImageGenerator'
-import { LoginForm } from './components/LoginForm'
-import { getCurrentUser } from './api/auth'
-import { clearToken, getToken, setToken } from './utils/token'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [currentUser, setCurrentUser] = useState<string | null>(null)
-  const [authChecking, setAuthChecking] = useState(true)
-
-  // Check for existing token on mount
-  useEffect(() => {
-    async function checkAuth() {
-      const token = getToken()
-      if (!token) {
-        setAuthChecking(false)
-        return
-      }
-
-      try {
-        const user = await getCurrentUser(token)
-        setCurrentUser(user.username)
-        setIsAuthenticated(true)
-      } catch {
-        clearToken()
-      } finally {
-        setAuthChecking(false)
-      }
-    }
-
-    void checkAuth()
-  }, [])
-
-  function handleLoginSuccess(username: string, token: string): void {
-    setToken(token)
-    setCurrentUser(username)
-    setIsAuthenticated(true)
-  }
-
-  function handleLogout(): void {
-    clearToken()
-    setCurrentUser(null)
-    setIsAuthenticated(false)
-  }
-
-  if (authChecking) {
-    return (
-      <div className="app">
-        <div className="app__loading">加载中...</div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="app">
-        <LoginForm onLoginSuccess={handleLoginSuccess} />
-      </div>
-    )
-  }
-
   return (
     <div className="app">
       <header className="app__header">
@@ -87,15 +28,12 @@ function App() {
           </div>
         </div>
         <div className="app__user">
-          <span className="app__username">{currentUser}</span>
-          <button type="button" className="app__logout" onClick={handleLogout}>
-            登出
-          </button>
+          <span className="app__username">测试模式</span>
         </div>
       </header>
       <main className="app__main">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
-          <ChatWindow onAuthError={handleLogout} />
+          <ChatWindow />
           <ImageGenerator />
         </div>
       </main>

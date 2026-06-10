@@ -18,10 +18,8 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
-from app.dependencies import get_current_user
 from app.llm.base import LLMProvider
 from app.llm.factory import get_llm_provider
-from app.models import User
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
@@ -107,11 +105,10 @@ async def chat(
     request: ChatRequest,
     provider: LLMProvider = Depends(get_llm_provider),
     retriever: Retriever = Depends(get_retriever),
-    user: User = Depends(get_current_user),
 ) -> ChatResponse:
     """Answer a renovation question grounded in retrieved knowledge (non-streaming).
 
-    Requires authentication.
+    Authentication is temporarily disabled for local testing.
     """
     conversation, sources = await _build_conversation(request, retriever)
     try:
@@ -134,11 +131,10 @@ async def chat_stream(
     request: ChatRequest,
     provider: LLMProvider = Depends(get_llm_provider),
     retriever: Retriever = Depends(get_retriever),
-    user: User = Depends(get_current_user),
 ) -> StreamingResponse:
     """Stream the answer over SSE: a `sources` event first, then `delta`s, then `done`.
 
-    Requires authentication.
+    Authentication is temporarily disabled for local testing.
     """
     conversation, sources = await _build_conversation(request, retriever)
 

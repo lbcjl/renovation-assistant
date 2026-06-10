@@ -1,5 +1,4 @@
 import type { ChatMessage, Source } from '../types'
-import { getToken } from '../utils/token'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
@@ -44,29 +43,20 @@ function handleBlock(block: string, handlers: StreamHandlers): void {
  * cited knowledge-base sources; `onDelta` fires for each text chunk. The system
  * prompt is added server-side, so only user/assistant turns are sent.
  *
- * Requires authentication: reads JWT token from localStorage.
+ * Authentication is temporarily disabled for local testing.
  */
 export async function streamChat(messages: ChatMessage[], handlers: StreamHandlers): Promise<void> {
   const payload = messages.map(({ role, content }) => ({ role, content }))
-  const token = getToken()
-
-  if (!token) {
-    throw new Error('未登录，请先登录')
-  }
 
   const response = await fetch(`${API_BASE_URL}/chat/stream`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ messages: payload }),
   })
 
   if (!response.ok || !response.body) {
-    if (response.status === 401) {
-      throw new Error('登录已过期，请重新登录')
-    }
     throw new Error(`请求失败 (${response.status})`)
   }
 

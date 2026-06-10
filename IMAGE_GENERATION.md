@@ -159,9 +159,9 @@ POST /image/generate (需认证)
   ↓
 ImageGenerationService
   ↓
-OpenAI 兼容 API (chat.completions.create)
+OpenAI 兼容 API (images.generate)
   └─ model: gpt-image-2
-  └─ messages: [{"role": "user", "content": prompt}]
+  └─ prompt: 用户输入的装修效果描述
   ↓
 返回图片 URL
 ```

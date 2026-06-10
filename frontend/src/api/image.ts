@@ -1,24 +1,22 @@
+import axios from 'axios'
 import api from './api'
-import { getToken } from '../utils/token'
 
 export interface ImageGenerationResponse {
   image_url: string
 }
 
-export async function generateImage(prompt: string): Promise<string> {
-  const token = getToken()
-  if (!token) {
-    throw new Error('未登录，请先登录')
-  }
+interface ErrorResponse {
+  detail?: string
+}
 
-  const response = await api.post<ImageGenerationResponse>(
-    '/image/generate',
-    { prompt },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  )
-  return response.data.image_url
+export async function generateImage(prompt: string): Promise<string> {
+  try {
+    const response = await api.post<ImageGenerationResponse>('/image/generate', { prompt })
+    return response.data.image_url
+  } catch (err) {
+    if (axios.isAxiosError<ErrorResponse>(err)) {
+      throw new Error(err.response?.data.detail ?? err.message)
+    }
+    throw err
+  }
 }

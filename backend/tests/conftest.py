@@ -3,8 +3,8 @@
 The chat endpoints depend on ``get_llm_provider`` and ``get_retriever``; tests
 override both with fakes so no network access or API key is required.
 
-PR5+: Chat endpoints now require authentication. Tests override ``get_current_user``
-to bypass actual JWT validation in most tests.
+Auth routes still have JWT coverage; chat/file/image endpoints are temporarily
+open for local testing.
 """
 
 from collections.abc import AsyncIterator, Iterator

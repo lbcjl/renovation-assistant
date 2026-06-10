@@ -19,6 +19,7 @@ dist/
 .idea/
 .vscode/
 *.swp
+*.log
 
 # Knowledge base build artifacts (PR2+)
 backend/data/index/

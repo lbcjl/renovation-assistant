@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     image_api_key: str = ""
     image_base_url: str = "https://freeapi.dgbmc.top/v1"
     image_model: str = "gpt-image-2"
+    image_proxy_url: str = ""
 
     # --- Embedding provider (OpenAI-compatible /embeddings). ---
     # Defaults target SiliconFlow hosting BAAI/bge-m3 (strong Chinese retrieval).
