@@ -42,10 +42,15 @@ function handleBlock(block: string, handlers: StreamHandlers): void {
  * Stream an answer from the backend over SSE. `onSources` fires once with the
  * cited knowledge-base sources; `onDelta` fires for each text chunk. The system
  * prompt is added server-side, so only user/assistant turns are sent.
+ * `model` optionally overrides the server-configured chat model.
  *
  * Authentication is temporarily disabled for local testing.
  */
-export async function streamChat(messages: ChatMessage[], handlers: StreamHandlers): Promise<void> {
+export async function streamChat(
+  messages: ChatMessage[],
+  handlers: StreamHandlers,
+  model?: string,
+): Promise<void> {
   const payload = messages.map(({ role, content }) => ({ role, content }))
 
   const response = await fetch(`${API_BASE_URL}/chat/stream`, {
@@ -53,7 +58,7 @@ export async function streamChat(messages: ChatMessage[], handlers: StreamHandle
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ messages: payload }),
+    body: JSON.stringify({ messages: payload, model: model ?? null }),
   })
 
   if (!response.ok || !response.body) {

@@ -18,6 +18,9 @@ class ChatRequest(BaseModel):
     """Payload for the chat endpoints."""
 
     messages: list[ChatMessage] = Field(..., min_length=1, max_length=_MAX_MESSAGES)
+    # Optional override of the server-configured chat model (e.g. picked from
+    # GET /models). None means "use the configured default".
+    model: str | None = Field(default=None, min_length=1, max_length=100)
 
     @field_validator("messages")
     @classmethod
@@ -118,3 +121,13 @@ class ImageGenerationResponse(BaseModel):
     """Response from the /image/generate endpoint."""
 
     image_url: str
+
+
+# --- Model listing schemas ---
+
+
+class ModelListResponse(BaseModel):
+    """Response from the /models endpoint."""
+
+    models: list[str]
+    default: str

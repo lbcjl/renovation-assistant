@@ -23,7 +23,7 @@ from app.llm.factory import get_llm_provider
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
-from app.routers import auth, files, image
+from app.routers import auth, files, image, models
 from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
@@ -36,6 +36,8 @@ app.include_router(auth.router)
 app.include_router(files.router)
 # Register image generation router
 app.include_router(image.router)
+# Register model listing router
+app.include_router(models.router)
 
 # Mount static file serving for uploaded files
 _upload_dir = Path("backend/data/uploads")
@@ -112,7 +114,7 @@ async def chat(
     """
     conversation, sources = await _build_conversation(request, retriever)
     try:
-        reply = await provider.chat(conversation)
+        reply = await provider.chat(conversation, model=request.model)
     except Exception as exc:  # noqa: BLE001 - surface any upstream failure as 502
         logger.exception("LLM provider call failed")
         raise HTTPException(status_code=502, detail="LLM provider error") from exc
@@ -141,7 +143,7 @@ async def chat_stream(
     async def event_stream() -> AsyncIterator[str]:
         yield _sse({"sources": [source.model_dump() for source in sources]}, event="sources")
         try:
-            async for delta in provider.chat_stream(conversation):
+            async for delta in provider.chat_stream(conversation, model=request.model):
                 yield _sse({"delta": delta})
         except Exception:  # noqa: BLE001 - report mid-stream failures as an SSE event
             logger.exception("LLM streaming failed")

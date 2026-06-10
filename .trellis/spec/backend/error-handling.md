@@ -71,6 +71,19 @@ non-transient-no-retry, 503 endpoint mapping). When disabling SDK-level retries
 (`AsyncOpenAI(max_retries=0)`), keep all retry control in the service so total upstream
 calls stay bounded.
 
+## Example (real code — `app/routers/models.py`)
+
+Error matrix for `GET /models` (lists chat models from the configured OpenAI-compatible
+endpoint; the picked model is sent back per request via `ChatRequest.model`):
+
+| Condition | Status | detail |
+|-----------|--------|--------|
+| `LLM_API_KEY` not configured | 503 | `LLM not configured` |
+| Upstream `/models` fetch failure | 502 | `Failed to list models` |
+
+Tests asserting this contract: `tests/test_models.py` (also covers `ChatRequest.model`
+pass-through to the provider for `/chat` and `/chat/stream`).
+
 ## Example (real code — `app/rag/ingest.py`)
 
 ```python

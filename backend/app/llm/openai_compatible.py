@@ -35,17 +35,19 @@ class OpenAICompatibleProvider:
     def _payload(self, messages: list[ChatMessage]) -> list[dict[str, str]]:
         return [{"role": m.role, "content": m.content} for m in messages]
 
-    async def chat(self, messages: list[ChatMessage]) -> str:
+    async def chat(self, messages: list[ChatMessage], model: str | None = None) -> str:
         completion = await self._client_or_create().chat.completions.create(
-            model=self._model,
+            model=model or self._model,
             messages=self._payload(messages),
             timeout=self._timeout,
         )
         return completion.choices[0].message.content or ""
 
-    async def chat_stream(self, messages: list[ChatMessage]) -> AsyncIterator[str]:
+    async def chat_stream(
+        self, messages: list[ChatMessage], model: str | None = None
+    ) -> AsyncIterator[str]:
         stream = await self._client_or_create().chat.completions.create(
-            model=self._model,
+            model=model or self._model,
             messages=self._payload(messages),
             stream=True,
             timeout=self._timeout,

@@ -37,13 +37,18 @@ class FakeProvider:
         self._reply = reply
         self._stream_pieces = ["测试", "回复"]
         self.received: list[ChatMessage] | None = None
+        self.received_model: str | None = None
 
-    async def chat(self, messages: list[ChatMessage]) -> str:
+    async def chat(self, messages: list[ChatMessage], model: str | None = None) -> str:
         self.received = messages
+        self.received_model = model
         return self._reply
 
-    async def chat_stream(self, messages: list[ChatMessage]) -> AsyncIterator[str]:
+    async def chat_stream(
+        self, messages: list[ChatMessage], model: str | None = None
+    ) -> AsyncIterator[str]:
         self.received = messages
+        self.received_model = model
         for piece in self._stream_pieces:
             yield piece
 

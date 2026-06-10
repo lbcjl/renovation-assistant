@@ -13,10 +13,18 @@ from app.schemas import ChatMessage
 class LLMProvider(Protocol):
     """Minimal interface a chat LLM provider must implement."""
 
-    async def chat(self, messages: list[ChatMessage]) -> str:
-        """Return the full assistant reply for the given conversation."""
+    async def chat(self, messages: list[ChatMessage], model: str | None = None) -> str:
+        """Return the full assistant reply for the given conversation.
+
+        ``model`` overrides the configured default model for this call.
+        """
         ...
 
-    def chat_stream(self, messages: list[ChatMessage]) -> AsyncIterator[str]:
-        """Yield the assistant reply incrementally as text deltas."""
+    def chat_stream(
+        self, messages: list[ChatMessage], model: str | None = None
+    ) -> AsyncIterator[str]:
+        """Yield the assistant reply incrementally as text deltas.
+
+        ``model`` overrides the configured default model for this call.
+        """
         ...
