@@ -123,11 +123,42 @@ class ImageGenerationResponse(BaseModel):
     image_url: str
 
 
-# --- Model listing schemas ---
+# --- Provider settings schemas (chat LLM and image generation) ---
 
 
 class ModelListResponse(BaseModel):
-    """Response from the /models endpoint."""
+    """Response from the POST /settings/{provider}/models endpoint."""
 
     models: list[str]
     default: str
+
+
+class ProviderSettingsResponse(BaseModel):
+    """Response from the GET /settings/{provider} endpoint (API key is masked)."""
+
+    base_url: str
+    model: str
+    api_key_set: bool
+    api_key_preview: str
+
+
+class ProviderSettingsUpdateRequest(BaseModel):
+    """Payload for the PUT /settings/{provider} endpoint.
+
+    ``api_key`` left empty/None keeps the currently saved key.
+    """
+
+    base_url: str = Field(..., min_length=1, max_length=500, pattern=r"^https?://")
+    model: str = Field(..., min_length=1, max_length=100)
+    api_key: str | None = Field(default=None, max_length=500)
+
+
+class FetchModelsRequest(BaseModel):
+    """Payload for the POST /settings/{provider}/models endpoint.
+
+    Empty fields fall back to the currently saved configuration, so the page
+    can probe a new base URL / key before saving.
+    """
+
+    base_url: str | None = Field(default=None, max_length=500)
+    api_key: str | None = Field(default=None, max_length=500)

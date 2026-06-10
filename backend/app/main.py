@@ -23,7 +23,7 @@ from app.llm.factory import get_llm_provider
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
-from app.routers import auth, files, image, models
+from app.routers import auth, files, image, provider_settings
 from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
@@ -36,8 +36,8 @@ app.include_router(auth.router)
 app.include_router(files.router)
 # Register image generation router
 app.include_router(image.router)
-# Register model listing router
-app.include_router(models.router)
+# Register provider settings router
+app.include_router(provider_settings.router)
 
 # Mount static file serving for uploaded files
 _upload_dir = Path("backend/data/uploads")

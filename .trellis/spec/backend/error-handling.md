@@ -71,18 +71,24 @@ non-transient-no-retry, 503 endpoint mapping). When disabling SDK-level retries
 (`AsyncOpenAI(max_retries=0)`), keep all retry control in the service so total upstream
 calls stay bounded.
 
-## Example (real code — `app/routers/models.py`)
+## Example (real code — `app/routers/provider_settings.py`)
 
-Error matrix for `GET /models` (lists chat models from the configured OpenAI-compatible
-endpoint; the picked model is sent back per request via `ChatRequest.model`):
+Runtime provider settings (chat LLM and image generation) are edited from the
+frontend settings page and persisted by `app/services/runtime_config.py` to
+`data/provider_config.json` (git-ignored; overrides `.env` defaults).
 
-| Condition | Status | detail |
-|-----------|--------|--------|
-| `LLM_API_KEY` not configured | 503 | `LLM not configured` |
-| Upstream `/models` fetch failure | 502 | `Failed to list models` |
+Error matrix for `/settings/{provider}` (`provider` ∈ `llm` | `image`):
 
-Tests asserting this contract: `tests/test_models.py` (also covers `ChatRequest.model`
-pass-through to the provider for `/chat` and `/chat/stream`).
+| Endpoint | Condition | Status | detail |
+|----------|-----------|--------|--------|
+| any | Unknown provider segment | 422 | Pydantic validation errors |
+| PUT | `base_url` not http(s), missing fields | 422 | Pydantic validation errors |
+| PUT | No API key provided and none saved | 400 | `API key is required` |
+| POST `/models` | No API key provided and none saved | 503 | `{provider} provider not configured` |
+| POST `/models` | Upstream `/models` fetch failure | 502 | `Failed to list models` |
+
+Tests asserting this contract: `tests/test_provider_settings.py` (also covers
+`ChatRequest.model` pass-through to the provider and section isolation when saving).
 
 ## Example (real code — `app/rag/ingest.py`)
 

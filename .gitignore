@@ -31,6 +31,9 @@ backend/data/index/
 backend/data/database.db
 *.db
 
+# Runtime provider config edited from the settings page (contains API keys)
+backend/data/provider_config.json
+
 # TypeScript build info
 *.tsbuildinfo
 

@@ -3,12 +3,9 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { streamChat } from '../api/chat'
 import { listFiles, deleteFile, addToKnowledgeBase } from '../api/files'
-import { fetchModels } from '../api/models'
 import type { ChatMessage, FileMetadata } from '../types'
 import { FileCard } from './FileCard'
 import { FileUpload } from './FileUpload'
-
-const MODEL_STORAGE_KEY = 'chat-model'
 
 const SUGGESTIONS = [
   '卫生间防水要刷多高？',
@@ -36,31 +33,11 @@ export function ChatWindow() {
   const [error, setError] = useState<string | null>(null)
   const [files, setFiles] = useState<FileMetadata[]>([])
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const [models, setModels] = useState<string[]>([])
-  const [model, setModel] = useState('')
 
   // Load files on mount
   useEffect(() => {
     void loadFiles()
-    void loadModels()
   }, [])
-
-  async function loadModels(): Promise<void> {
-    try {
-      const data = await fetchModels()
-      setModels(data.models)
-      const saved = localStorage.getItem(MODEL_STORAGE_KEY)
-      setModel(saved && data.models.includes(saved) ? saved : data.default)
-    } catch (err) {
-      // Silently fall back to the server-configured default model
-      console.error('Failed to load models:', err)
-    }
-  }
-
-  function handleModelChange(value: string): void {
-    setModel(value)
-    localStorage.setItem(MODEL_STORAGE_KEY, value)
-  }
 
   async function loadFiles(): Promise<void> {
     try {
@@ -119,18 +96,14 @@ export function ChatWindow() {
     setLoading(true)
 
     try {
-      await streamChat(
-        history,
-        {
-          onSources: (sources) =>
-            setMessages((prev) => patchLast(prev, (message) => ({ ...message, sources }))),
-          onDelta: (delta) =>
-            setMessages((prev) =>
-              patchLast(prev, (message) => ({ ...message, content: message.content + delta })),
-            ),
-        },
-        model || undefined,
-      )
+      await streamChat(history, {
+        onSources: (sources) =>
+          setMessages((prev) => patchLast(prev, (message) => ({ ...message, sources }))),
+        onDelta: (delta) =>
+          setMessages((prev) =>
+            patchLast(prev, (message) => ({ ...message, content: message.content + delta })),
+          ),
+      })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '出错了，请稍后重试'
 
@@ -154,28 +127,6 @@ export function ChatWindow() {
 
   return (
     <div className="chat">
-      {/* Model picker */}
-      {models.length > 0 && (
-        <div className="chat__toolbar">
-          <label className="chat__model-label" htmlFor="chat-model-select">
-            模型
-          </label>
-          <select
-            id="chat-model-select"
-            className="chat__model-select"
-            value={model}
-            onChange={(event) => handleModelChange(event.target.value)}
-            disabled={loading}
-          >
-            {models.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
       {/* File list section */}
       {files.length > 0 && (
         <div className="chat__files">
