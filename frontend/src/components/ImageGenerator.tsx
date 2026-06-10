@@ -37,6 +37,7 @@ export function ImageGenerator() {
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="描述你想要的装修效果，例如：现代简约风格客厅，白色墙面，木质地板，落地窗"
           rows={3}
+          disabled={loading}
         />
         <button
           className="image-generator__button"
@@ -46,6 +47,9 @@ export function ImageGenerator() {
           {loading ? '生成中...' : '生成效果图'}
         </button>
       </div>
+      {loading && (
+        <div className="image-generator__hint">正在生成效果图，约需 1~2 分钟，请耐心等待…</div>
+      )}
       {error && <div className="image-generator__error">{error}</div>}
       {imageUrl && (
         <div className="image-generator__result">

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.config import get_settings
 from app.schemas import ImageGenerationRequest, ImageGenerationResponse
-from app.services.image_service import ImageGenerationService
+from app.services.image_service import ImageGenerationService, ImageGenerationUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,11 @@ async def generate_image(
     """
     try:
         image_url = await service.generate_image(request.prompt)
+    except ImageGenerationUnavailableError as exc:
+        logger.warning("Image provider unavailable after retries")
+        raise HTTPException(
+            status_code=503, detail="Image service temporarily unavailable"
+        ) from exc
     except Exception as exc:
         logger.exception("Image generation failed")
         raise HTTPException(status_code=502, detail="Image generation failed") from exc

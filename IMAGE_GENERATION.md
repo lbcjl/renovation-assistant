@@ -116,12 +116,22 @@ curl -X POST http://localhost:8000/image/generate \
 **解决**：检查 Authorization header 是否正确
 
 ### 503 Service Unavailable
+
+未配置:
 ```json
 {
   "detail": "Image generation not configured"
 }
 ```
 **解决**：检查 IMAGE_API_KEY 环境变量是否配置
+
+上游瞬时故障（自动重试 3 次后仍失败）:
+```json
+{
+  "detail": "Image service temporarily unavailable"
+}
+```
+**解决**：上游中转服务（连接断开 / 5xx / 限流）暂时不可用，稍后重试即可；后端已自动重试 3 次（间隔 2s/4s）
 
 ### 502 Bad Gateway
 ```json
