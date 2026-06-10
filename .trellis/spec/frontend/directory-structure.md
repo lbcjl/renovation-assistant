@@ -1,45 +1,58 @@
 # Directory Structure
 
-> How frontend code is organized in this project. Documents the actual layout under `frontend/`.
+> How frontend code is organized in this project. Documents the actual layout at the
+> repository root (single Next.js app; the old `frontend/` Vite project was removed
+> in the 2026-06 migration).
 
 ---
 
 ## Directory Layout
 
 ```
-frontend/
-├── index.html
-├── src/
-│   ├── main.tsx            # entry point (createRoot)
-│   ├── App.tsx             # root component / page layout
-│   ├── index.css           # global styles (BEM-style class names)
-│   ├── types.ts            # shared domain types (e.g. ChatMessage, ChatRole)
-│   ├── api/                # one module per backend endpoint, typed
-│   │   └── chat.ts         #   postChat(messages) -> reply
-│   ├── components/         # React components
-│   │   └── ChatWindow.tsx
-│   └── vite-env.d.ts       # import.meta.env typing
-├── package.json            # scripts: dev / build / lint / typecheck
-├── tsconfig*.json          # project references (app + node)
-├── vite.config.ts
-└── eslint.config.js        # flat config, typescript-eslint
+renovation-assistant/
+├── app/
+│   ├── layout.tsx           # root layout (html lang, metadata, globals.css import)
+│   ├── page.tsx             # 'use client' root page: header + tab nav, keeps all
+│   │                        #   three pages mounted (.app__page--hidden switching)
+│   ├── globals.css          # global styles (BEM-style class names, design tokens)
+│   └── api/                 # route handlers (backend) — see backend specs
+├── components/              # React components (client)
+│   ├── ChatWindow.tsx       #   useChat-based chat + file list/upload sections
+│   ├── FileCard.tsx
+│   ├── FileUpload.tsx
+│   ├── ImageGenerator.tsx
+│   ├── SettingsPage.tsx
+│   └── ProviderSettingsForm.tsx
+├── lib/
+│   ├── api-client.ts        # browser-side fetch helpers, one function per endpoint,
+│   │                        #   friendly Chinese error messages
+│   └── chat.ts              # shared chat types/helpers (ChatUIMessage, messageText,
+│                            #   messageSources) used by both the route and the UI
+├── eslint.config.mjs        # flat config (eslint-config-next)
+└── tsconfig.json            # strict, @/* path alias to repo root
 ```
 
 ## Module Organization
 
-- **Network calls live in `src/api/`**, never inside components. One exported function per
-  endpoint, with typed input/output (see `api/chat.ts`).
-- **Shared types live in `src/types.ts`**. Components import them with `import type`.
-- Components are presentational + own their local state; extract a `src/hooks/` module only
-  when logic is reused across components.
+- **Network calls live in `lib/api-client.ts`**, never inline in components. One
+  exported function per endpoint, with typed input/output and the user-facing
+  Chinese error strings. (Exception: chat streaming goes through `useChat` /
+  `DefaultChatTransport` pointed at `/api/chat`.)
+- **Shared chat/domain types** come from `lib/chat.ts` (`ChatUIMessage`,
+  `ChatSource`) and `lib/file-service.ts` (`FileMetadata`, re-exported by
+  `lib/api-client.ts`). Components import them with `import type`.
+- Components are presentational + own their local state; extract a `hooks/` module
+  only when logic is reused across components.
+- Components that use hooks/state declare `"use client"`.
 
 ## Naming Conventions
 
 - Components: `PascalCase.tsx` (e.g. `ChatWindow.tsx`). Functions/vars: `camelCase`.
-- CSS classes: BEM-style — `block__element--modifier` (e.g. `chat__message--user`).
+- CSS classes: BEM-style — `block__element--modifier` (e.g. `chat__row--user`).
 
 ## Anti-patterns
 
-- ❌ `fetch()` directly inside a component (put it in `src/api/`).
-- ❌ Inline styles for layout (use classes in `index.css`).
-- ❌ Committing `node_modules/` or `dist/`.
+- ❌ `fetch()` directly inside a component (put it in `lib/api-client.ts`).
+- ❌ Inline styles for layout (use classes in `app/globals.css`).
+- ❌ Importing server-only modules (`fs`, `lib/config.ts`, …) from client components —
+  type-only imports are fine.

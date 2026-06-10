@@ -6,6 +6,7 @@ __pycache__/
 venv/
 .env
 .env.*
+!.env.example
 .pytest_cache/
 .ruff_cache/
 
@@ -14,6 +15,10 @@ node_modules/
 dist/
 *.local
 
+# Next.js
+.next/
+next-env.d.ts
+
 # Editor / OS
 .DS_Store
 .idea/
@@ -21,18 +26,15 @@ dist/
 *.swp
 *.log
 
-# Knowledge base build artifacts (PR2+)
-backend/data/index/
-
-# Local raw source materials used during knowledge extraction
-/data/
+# Knowledge base build artifacts and runtime data at the repo root: keep
+# knowledge markdown sources tracked, ignore everything else (vector index,
+# uploads, file metadata, raw source materials, and provider_config.json
+# which contains API keys)
+/data/*
+!/data/knowledge/
 
 # Database files (generated at runtime)
-backend/data/database.db
 *.db
-
-# Runtime provider config edited from the settings page (contains API keys)
-backend/data/provider_config.json
 
 # TypeScript build info
 *.tsbuildinfo

@@ -26,7 +26,7 @@ python extract_weixin_docs.py
 ## 输出结构
 
 ```
-backend/data/knowledge/
+data/knowledge/
 ├── extracted_links.json          # 所有文档链接列表
 ├── 一口气搞懂自装修-工人选择与工费参考.md
 ├── 一口气搞懂自装修-开工准备与交底细节.md
@@ -47,10 +47,9 @@ backend/data/knowledge/
 ## 提取完成后
 
 1. 检查生成的 Markdown 文件
-2. 更新 `backend/data/sources.md` 添加来源说明
-3. 运行 RAG 索引构建：
+2. 在知识库目录补充来源说明
+3. 运行 RAG 索引构建（仓库根目录）：
    ```bash
-   cd backend
-   python -m app.rag.ingest
+   npm run ingest
    ```
-4. 重启后端服务，新知识库即可生效
+4. 重启 `npm run dev`，新知识库即可生效

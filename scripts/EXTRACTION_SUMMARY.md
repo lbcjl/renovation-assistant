@@ -6,7 +6,7 @@
 
 - **总大小**：12 MB
 - **格式**：Markdown + 高清截图
-- **位置**：`backend/data/knowledge/weixin-docs/`
+- **位置**：`data/knowledge/weixin-docs/`（原 `backend/data/knowledge/weixin-docs/`，2026-06 迁移）
 
 ## 已提取文档列表（34个）
 
