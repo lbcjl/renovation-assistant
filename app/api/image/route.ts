@@ -172,7 +172,7 @@ export async function POST(request: Request): Promise<Response> {
       quality: typeof quality === "string" && quality !== "" ? quality : undefined,
       n: typeof n === "number" ? n : undefined,
       proxyUrl: settings.imageProxyUrl,
-      timeoutSeconds: settings.requestTimeoutSeconds,
+      timeoutSeconds: settings.imageTimeoutSeconds,
     });
     // `image_url` is kept for backward compatibility with the single-image shape.
     return Response.json({ image_url: imageUrls[0], image_urls: imageUrls });

@@ -25,6 +25,8 @@ export interface Settings {
   imageBaseUrl: string;
   imageModel: string;
   imageProxyUrl: string;
+  /** Per-attempt timeout (seconds) for image generation; images take 1-2+ min. */
+  imageTimeoutSeconds: number;
 
   // --- Embedding provider (OpenAI-compatible /embeddings). ---
   embeddingApiKey: string;
@@ -70,6 +72,7 @@ function buildSettings(): Settings {
     imageBaseUrl: envString("IMAGE_BASE_URL", "https://freeapi.dgbmc.top/v1"),
     imageModel: envString("IMAGE_MODEL", "gpt-image-2"),
     imageProxyUrl: envString("IMAGE_PROXY_URL", ""),
+    imageTimeoutSeconds: envNumber("IMAGE_TIMEOUT_SECONDS", 300.0),
 
     embeddingApiKey: envString("EMBEDDING_API_KEY", ""),
     embeddingBaseUrl: envString("EMBEDDING_BASE_URL", "https://api.siliconflow.cn/v1"),
