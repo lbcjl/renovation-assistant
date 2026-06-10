@@ -25,7 +25,7 @@ from app.models import User
 from app.prompts import build_system_prompt
 from app.rag.factory import get_retriever
 from app.rag.retriever import RetrievedContext, Retriever
-from app.routers import auth, files
+from app.routers import auth, files, image
 from app.schemas import ChatMessage, ChatRequest, ChatResponse, Source
 
 logger = logging.getLogger("renovation_assistant")
@@ -36,6 +36,8 @@ app = FastAPI(title="Renovation Assistant API", version="0.5.0")
 app.include_router(auth.router)
 # Register file management router
 app.include_router(files.router)
+# Register image generation router
+app.include_router(image.router)
 
 # Mount static file serving for uploaded files
 _upload_dir = Path("backend/data/uploads")

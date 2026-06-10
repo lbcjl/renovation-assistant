@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     # Request timeout (seconds) applied to LLM chat calls.
     request_timeout_seconds: float = 60.0
 
+    # --- Image generation provider (OpenAI-compatible). ---
+    image_api_key: str = ""
+    image_base_url: str = "https://freeapi.dgbmc.top/v1"
+    image_model: str = "gpt-image-2"
+
     # --- Embedding provider (OpenAI-compatible /embeddings). ---
     # Defaults target SiliconFlow hosting BAAI/bge-m3 (strong Chinese retrieval).
     # NOTE: DeepSeek has no embeddings endpoint, so this needs its own key.

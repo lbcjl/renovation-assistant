@@ -103,3 +103,18 @@ class AddToKnowledgeBaseResponse(BaseModel):
 
     success: bool
     message: str
+
+
+# --- Image generation schemas ---
+
+
+class ImageGenerationRequest(BaseModel):
+    """Payload for the /image/generate endpoint."""
+
+    prompt: str = Field(..., min_length=1, max_length=1000)
+
+
+class ImageGenerationResponse(BaseModel):
+    """Response from the /image/generate endpoint."""
+
+    image_url: str

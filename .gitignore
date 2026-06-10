@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 venv/
 .env
+.env.*
 .pytest_cache/
 .ruff_cache/
 
@@ -22,12 +23,18 @@ dist/
 # Knowledge base build artifacts (PR2+)
 backend/data/index/
 
+# Local raw source materials used during knowledge extraction
+/data/
+
 # Database files (generated at runtime)
 backend/data/database.db
 *.db
 
 # TypeScript build info
 *.tsbuildinfo
+
+# Local code intelligence indexes
+.codegraph/
 
 # Trellis workspace (session notes, not code)
 .trellis/workspace/

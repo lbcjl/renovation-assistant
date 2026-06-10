@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChatWindow } from './components/ChatWindow'
+import { ImageGenerator } from './components/ImageGenerator'
 import { LoginForm } from './components/LoginForm'
 import { getCurrentUser } from './api/auth'
 import { clearToken, getToken, setToken } from './utils/token'
@@ -23,7 +24,6 @@ function App() {
         setCurrentUser(user.username)
         setIsAuthenticated(true)
       } catch {
-        // Token invalid or expired
         clearToken()
       } finally {
         setAuthChecking(false)
@@ -94,7 +94,10 @@ function App() {
         </div>
       </header>
       <main className="app__main">
-        <ChatWindow onAuthError={handleLogout} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', height: '100%' }}>
+          <ChatWindow onAuthError={handleLogout} />
+          <ImageGenerator />
+        </div>
       </main>
     </div>
   )
