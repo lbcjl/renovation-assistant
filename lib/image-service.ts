@@ -1,5 +1,5 @@
 /**
- * Image generation service against an OpenAI-compatible /images/generations API.
+ * Image generation service against an OpenAI-compatible images API.
  *
  * Port of `backend/app/services/image_service.py`. The OpenAI SDK is replaced
  * with plain `fetch` (injectable for tests); the retry contract is identical:
@@ -7,6 +7,10 @@
  * retry. Transient failures (dropped connections / timeouts, HTTP 5xx, HTTP
  * 429) are retried; everything else (other HTTP errors, empty or invalid
  * response bodies) propagates immediately.
+ *
+ * Text-only prompts POST JSON to `/images/generations`; prompts with a
+ * reference image (e.g. a floor plan to turn into a design rendering) POST
+ * multipart form data to `/images/edits`.
  *
  * Proxy support mirrors `httpx.AsyncClient(proxy=..., trust_env=False)`:
  * only the explicitly configured proxy is used (Node's fetch ignores
@@ -32,7 +36,7 @@ export interface ImageFetchResponse {
 export interface ImageFetchInit {
   method: "POST";
   headers: Record<string, string>;
-  body: string;
+  body: string | FormData;
   signal?: AbortSignal;
   dispatcher?: Dispatcher;
 }
@@ -40,10 +44,25 @@ export interface ImageFetchInit {
 /** Injectable transport (defaults to the global undici-backed `fetch`). */
 export type ImageFetch = (url: string, init: ImageFetchInit) => Promise<ImageFetchResponse>;
 
+/** A reference image sent along with the prompt (image-to-image). */
+export interface ImageInput {
+  data: Uint8Array;
+  mimeType: string;
+  filename: string;
+}
+
 export interface GenerateImageOptions {
   baseUrl: string;
   apiKey: string;
   model: string;
+  /** Reference image; switches the request to the /images/edits endpoint. */
+  image?: ImageInput;
+  /** Image dimensions, e.g. "1024x1024"; controls the aspect ratio. */
+  size?: string;
+  /** Provider quality hint (e.g. low/medium/high); omitted when empty. */
+  quality?: string;
+  /** Number of images to generate (provider-side `n`). */
+  n?: number;
   /** Outbound proxy URL; empty string disables proxying. */
   proxyUrl?: string;
   /** Per-attempt request timeout in seconds. */
@@ -68,15 +87,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Generate an image and return its URL (or a data: URL for base64 payloads).
+ * Generate one or more images and return their URLs (data: URLs for base64
+ * payloads). The returned array always has at least one entry; providers that
+ * return fewer images than requested are not treated as an error.
  *
  * @throws ImageGenerationUnavailableError All attempts failed transiently.
  * @throws Error Non-transient generation failure.
  */
-export async function generateImage(
+export async function generateImages(
   prompt: string,
   options: GenerateImageOptions,
-): Promise<string> {
+): Promise<string[]> {
   const maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const retryDelaySeconds = options.retryDelaySeconds ?? DEFAULT_RETRY_DELAY_SECONDS;
   const fetchImpl = options.fetchImpl ?? (fetch as unknown as ImageFetch);
@@ -110,20 +131,49 @@ async function requestImage(
   options: GenerateImageOptions,
   fetchImpl: ImageFetch,
   dispatcher: Dispatcher | undefined,
-): Promise<string> {
-  const url = `${options.baseUrl.replace(/\/+$/, "")}/images/generations`;
-  const init: ImageFetchInit = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${options.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+): Promise<string[]> {
+  const base = options.baseUrl.replace(/\/+$/, "");
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${options.apiKey}`,
+  };
+  let url: string;
+  let body: string | FormData;
+  if (options.image !== undefined) {
+    // Image-to-image: multipart /images/edits. Content-Type is set by fetch
+    // itself so the multipart boundary is included.
+    url = `${base}/images/edits`;
+    const form = new FormData();
+    form.append("model", options.model);
+    form.append("prompt", prompt);
+    form.append("n", String(options.n ?? 1));
+    form.append("size", options.size ?? "1024x1024");
+    if (options.quality) {
+      form.append("quality", options.quality);
+    }
+    form.append(
+      "image",
+      new Blob([options.image.data as BlobPart], { type: options.image.mimeType }),
+      options.image.filename,
+    );
+    body = form;
+  } else {
+    url = `${base}/images/generations`;
+    headers["Content-Type"] = "application/json";
+    const requestBody: Record<string, unknown> = {
       model: options.model,
       prompt,
-      n: 1,
-      size: "1024x1024",
-    }),
+      n: options.n ?? 1,
+      size: options.size ?? "1024x1024",
+    };
+    if (options.quality) {
+      requestBody["quality"] = options.quality;
+    }
+    body = JSON.stringify(requestBody);
+  }
+  const init: ImageFetchInit = {
+    method: "POST",
+    headers,
+    body,
   };
   if (options.timeoutSeconds !== undefined) {
     init.signal = AbortSignal.timeout(Math.max(1, Math.round(options.timeoutSeconds * 1000)));
@@ -156,15 +206,22 @@ async function requestImage(
     throw new Error("Invalid JSON in image provider response", { cause: error });
   }
   const data = isRecord(payload) ? payload["data"] : undefined;
-  const image = Array.isArray(data) && data.length > 0 ? data[0] : undefined;
-  if (!isRecord(image)) {
+  if (!Array.isArray(data) || data.length === 0) {
     throw new Error("No image data in response");
   }
-  if (typeof image["url"] === "string" && image["url"]) {
-    return image["url"];
+  const urls: string[] = [];
+  for (const image of data) {
+    if (!isRecord(image)) {
+      continue;
+    }
+    if (typeof image["url"] === "string" && image["url"]) {
+      urls.push(image["url"]);
+    } else if (typeof image["b64_json"] === "string" && image["b64_json"]) {
+      urls.push(`data:image/png;base64,${image["b64_json"]}`);
+    }
   }
-  if (typeof image["b64_json"] === "string" && image["b64_json"]) {
-    return `data:image/png;base64,${image["b64_json"]}`;
+  if (urls.length === 0) {
+    throw new Error("No image URL or base64 data in response");
   }
-  throw new Error("No image URL or base64 data in response");
+  return urls;
 }

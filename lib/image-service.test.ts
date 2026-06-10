@@ -10,7 +10,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  generateImage,
+  generateImages,
   ImageGenerationUnavailableError,
   type ImageFetch,
   type ImageFetchInit,
@@ -64,7 +64,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("generateImage retry contract", () => {
+describe("generateImages retry contract", () => {
   it("retries transient failures (connection drop, 5xx) then succeeds", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const transport = transportWith([
@@ -73,9 +73,9 @@ describe("generateImage retry contract", () => {
       urlResponse("https://example.test/ok.png"),
     ]);
 
-    const url = await generateImage("a bright study room", options(transport.fetchImpl));
+    const urls = await generateImages("a bright study room", options(transport.fetchImpl));
 
-    expect(url).toBe("https://example.test/ok.png");
+    expect(urls).toEqual(["https://example.test/ok.png"]);
     expect(transport.calls).toHaveLength(3);
   });
 
@@ -86,9 +86,9 @@ describe("generateImage retry contract", () => {
       urlResponse("https://example.test/ok.png"),
     ]);
 
-    const url = await generateImage("a bright study room", options(transport.fetchImpl));
+    const urls = await generateImages("a bright study room", options(transport.fetchImpl));
 
-    expect(url).toBe("https://example.test/ok.png");
+    expect(urls).toEqual(["https://example.test/ok.png"]);
     expect(transport.calls).toHaveLength(2);
   });
 
@@ -101,7 +101,7 @@ describe("generateImage retry contract", () => {
     ]);
 
     await expect(
-      generateImage("a bright study room", options(transport.fetchImpl)),
+      generateImages("a bright study room", options(transport.fetchImpl)),
     ).rejects.toBeInstanceOf(ImageGenerationUnavailableError);
     expect(transport.calls).toHaveLength(3);
   });
@@ -110,7 +110,7 @@ describe("generateImage retry contract", () => {
     const transport = transportWith([jsonResponse(200, { data: [] })]);
 
     await expect(
-      generateImage("a bright study room", options(transport.fetchImpl)),
+      generateImages("a bright study room", options(transport.fetchImpl)),
     ).rejects.toThrow("No image data in response");
     expect(transport.calls).toHaveLength(1);
   });
@@ -119,7 +119,7 @@ describe("generateImage retry contract", () => {
     const transport = transportWith([jsonResponse(401, {})]);
 
     await expect(
-      generateImage("a bright study room", options(transport.fetchImpl)),
+      generateImages("a bright study room", options(transport.fetchImpl)),
     ).rejects.toThrow("status 401");
     expect(transport.calls).toHaveLength(1);
   });
@@ -127,16 +127,16 @@ describe("generateImage retry contract", () => {
   it("returns a data URL for base64 payloads", async () => {
     const transport = transportWith([jsonResponse(200, { data: [{ b64_json: "aGVsbG8=" }] })]);
 
-    const url = await generateImage("a cozy bedroom", options(transport.fetchImpl));
+    const urls = await generateImages("a cozy bedroom", options(transport.fetchImpl));
 
-    expect(url).toBe("data:image/png;base64,aGVsbG8=");
+    expect(urls).toEqual(["data:image/png;base64,aGVsbG8="]);
   });
 
   it("rejects when the image has neither url nor b64_json", async () => {
     const transport = transportWith([jsonResponse(200, { data: [{ url: "", b64_json: null }] })]);
 
     await expect(
-      generateImage("a cozy bedroom", options(transport.fetchImpl)),
+      generateImages("a cozy bedroom", options(transport.fetchImpl)),
     ).rejects.toThrow("No image URL or base64 data in response");
     expect(transport.calls).toHaveLength(1);
   });
@@ -144,17 +144,88 @@ describe("generateImage retry contract", () => {
   it("sends the OpenAI-compatible request shape with bearer auth", async () => {
     const transport = transportWith([urlResponse("https://example.test/ok.png")]);
 
-    await generateImage("a modern kitchen", options(transport.fetchImpl));
+    await generateImages("a modern kitchen", options(transport.fetchImpl));
 
     const [{ url, init }] = transport.calls;
     expect(url).toBe("https://image.example/v1/images/generations");
     expect(init.method).toBe("POST");
     expect(init.headers["Authorization"]).toBe("Bearer test-image-key");
-    expect(JSON.parse(init.body)).toEqual({
+    expect(JSON.parse(init.body as string)).toEqual({
       model: "gpt-image-2",
       prompt: "a modern kitchen",
       n: 1,
       size: "1024x1024",
     });
+  });
+
+  it("passes size, quality and n through to the provider", async () => {
+    const transport = transportWith([
+      jsonResponse(200, {
+        data: [{ url: "https://example.test/1.png" }, { url: "https://example.test/2.png" }],
+      }),
+    ]);
+
+    const urls = await generateImages("a modern kitchen", {
+      ...options(transport.fetchImpl),
+      size: "1792x1024",
+      quality: "high",
+      n: 2,
+    });
+
+    expect(urls).toEqual(["https://example.test/1.png", "https://example.test/2.png"]);
+    const [{ init }] = transport.calls;
+    expect(JSON.parse(init.body as string)).toEqual({
+      model: "gpt-image-2",
+      prompt: "a modern kitchen",
+      n: 2,
+      size: "1792x1024",
+      quality: "high",
+    });
+  });
+
+  it("sends multipart form data to /images/edits when a reference image is given", async () => {
+    const transport = transportWith([urlResponse("https://example.test/design.png")]);
+
+    const urls = await generateImages("turn this floor plan into a rendering", {
+      ...options(transport.fetchImpl),
+      image: {
+        data: new Uint8Array([1, 2, 3]),
+        mimeType: "image/png",
+        filename: "floor-plan.png",
+      },
+      n: 2,
+      size: "1536x1024",
+      quality: "high",
+    });
+
+    expect(urls).toEqual(["https://example.test/design.png"]);
+    const [{ url, init }] = transport.calls;
+    expect(url).toBe("https://image.example/v1/images/edits");
+    expect(init.headers["Authorization"]).toBe("Bearer test-image-key");
+    // Content-Type must be unset so fetch adds the multipart boundary itself.
+    expect(init.headers["Content-Type"]).toBeUndefined();
+    expect(init.body).toBeInstanceOf(FormData);
+    const form = init.body as FormData;
+    expect(form.get("model")).toBe("gpt-image-2");
+    expect(form.get("prompt")).toBe("turn this floor plan into a rendering");
+    expect(form.get("n")).toBe("2");
+    expect(form.get("size")).toBe("1536x1024");
+    expect(form.get("quality")).toBe("high");
+    const file = form.get("image");
+    expect(file).toBeInstanceOf(File);
+    expect((file as File).name).toBe("floor-plan.png");
+    expect((file as File).type).toBe("image/png");
+  });
+
+  it("collects mixed url and base64 images, skipping invalid entries", async () => {
+    const transport = transportWith([
+      jsonResponse(200, {
+        data: [{ url: "https://example.test/1.png" }, "garbage", { b64_json: "aGVsbG8=" }],
+      }),
+    ]);
+
+    const urls = await generateImages("a cozy bedroom", options(transport.fetchImpl));
+
+    expect(urls).toEqual(["https://example.test/1.png", "data:image/png;base64,aGVsbG8="]);
   });
 });

@@ -103,6 +103,18 @@ export async function addToKnowledgeBase(fileId: string): Promise<AddToKnowledge
 
 export interface ImageGenerationResponse {
   image_url: string;
+  image_urls?: string[];
+}
+
+export interface ImageGenerationOptions {
+  /** Pixel size like "1024x1024"; controls the aspect ratio. */
+  size?: string;
+  /** Provider quality hint; empty string lets the provider decide. */
+  quality?: string;
+  /** Number of images to generate (1-4). */
+  n?: number;
+  /** Reference image (e.g. a floor plan) for image-to-image generation. */
+  image?: File;
 }
 
 function imageErrorMessage(status: number): string {
@@ -111,20 +123,36 @@ function imageErrorMessage(status: number): string {
   }
   // The prompt guard returns 400 (FastAPI used 422); same friendly message.
   if (status === 400 || status === 422) {
-    return "描述内容不符合要求：不能为空，且不超过 1000 字";
+    return "描述或图片不符合要求：描述不能为空且不超过 1000 字，图片需为 10MB 内的 PNG/JPG/WebP";
   }
   return "生成失败，请重试";
 }
 
-/** Generate a renovation rendering; resolves with the image URL. */
-export async function generateImage(prompt: string): Promise<string> {
-  let response: Response;
-  try {
-    response = await fetch("/api/image", {
+/** Generate renovation renderings; resolves with the image URLs. */
+export async function generateImages(
+  prompt: string,
+  options: ImageGenerationOptions = {},
+): Promise<string[]> {
+  const { image, size, quality, n } = options;
+  let init: RequestInit;
+  if (image !== undefined) {
+    const form = new FormData();
+    form.append("prompt", prompt);
+    if (size !== undefined) form.append("size", size);
+    if (quality !== undefined) form.append("quality", quality);
+    if (n !== undefined) form.append("n", String(n));
+    form.append("image", image);
+    init = { method: "POST", body: form };
+  } else {
+    init = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    });
+      body: JSON.stringify({ prompt, size, quality, n }),
+    };
+  }
+  let response: Response;
+  try {
+    response = await fetch("/api/image", init);
   } catch {
     throw new Error("无法连接服务器，请确认后端服务已启动");
   }
@@ -132,7 +160,7 @@ export async function generateImage(prompt: string): Promise<string> {
     throw new Error(imageErrorMessage(response.status));
   }
   const data = (await response.json()) as ImageGenerationResponse;
-  return data.image_url;
+  return data.image_urls ?? [data.image_url];
 }
 
 // ---------------------------------------------------------------------------

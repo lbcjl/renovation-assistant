@@ -9,13 +9,21 @@ import {
   type ProviderSection,
 } from "@/lib/api-client";
 
+import type { ToastType } from "./Toast";
+
 interface ProviderSettingsFormProps {
   provider: ProviderSection;
   title: string;
   description: string;
+  notify: (type: ToastType, message: string) => void;
 }
 
-export function ProviderSettingsForm({ provider, title, description }: ProviderSettingsFormProps) {
+export function ProviderSettingsForm({
+  provider,
+  title,
+  description,
+  notify,
+}: ProviderSettingsFormProps) {
   const [baseUrl, setBaseUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [keyPreview, setKeyPreview] = useState("");
@@ -23,8 +31,6 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
   const [model, setModel] = useState("");
   const [fetching, setFetching] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -41,23 +47,21 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
         setModels(settings.model ? [settings.model] : []);
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "获取配置失败");
+          notify("error", err instanceof Error ? err.message : "获取配置失败");
         }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [provider]);
+  }, [provider, notify]);
 
   async function handleFetchModels(): Promise<void> {
     if (!baseUrl.trim()) {
-      setError("请先填写中转站地址");
+      notify("error", "请先填写中转站地址");
       return;
     }
     setFetching(true);
-    setError("");
-    setSuccess("");
     try {
       const list = await fetchProviderModels(provider, {
         base_url: baseUrl.trim(),
@@ -65,12 +69,15 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
       });
       setModels(list.models);
       if (list.models.length === 0) {
-        setError("该端点没有返回任何模型");
-      } else if (!list.models.includes(model)) {
-        setModel(list.models.includes(list.default) ? list.default : list.models[0]);
+        notify("error", "该端点没有返回任何模型");
+      } else {
+        if (!list.models.includes(model)) {
+          setModel(list.models.includes(list.default) ? list.default : list.models[0]);
+        }
+        notify("success", `已获取 ${list.models.length} 个模型`);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "获取模型列表失败");
+      notify("error", err instanceof Error ? err.message : "获取模型列表失败");
     } finally {
       setFetching(false);
     }
@@ -78,12 +85,10 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
 
   async function handleSave(): Promise<void> {
     if (!baseUrl.trim() || !model) {
-      setError("请填写中转站地址并选择模型");
+      notify("error", "请填写中转站地址并选择模型");
       return;
     }
     setSaving(true);
-    setError("");
-    setSuccess("");
     try {
       const saved = await saveProviderSettings(provider, {
         base_url: baseUrl.trim(),
@@ -92,9 +97,9 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
       });
       setKeyPreview(saved.api_key_preview);
       setApiKey("");
-      setSuccess("已保存，立即生效");
+      notify("success", `${title}已保存，立即生效`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "保存配置失败");
+      notify("error", err instanceof Error ? err.message : "保存配置失败");
     } finally {
       setSaving(false);
     }
@@ -162,13 +167,11 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
             onClick={() => void handleFetchModels()}
             disabled={busy}
           >
+            {fetching && <span className="settings__spinner" aria-hidden="true" />}
             {fetching ? "获取中…" : "获取模型列表"}
           </button>
         </div>
       </div>
-
-      {error && <p className="settings__error">{error}</p>}
-      {success && <p className="settings__success">{success}</p>}
 
       <button
         type="button"
@@ -176,6 +179,7 @@ export function ProviderSettingsForm({ provider, title, description }: ProviderS
         onClick={() => void handleSave()}
         disabled={busy}
       >
+        {saving && <span className="settings__spinner settings__spinner--light" aria-hidden="true" />}
         {saving ? "保存中…" : "保存配置"}
       </button>
     </section>
