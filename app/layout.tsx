@@ -9,8 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  // suppressHydrationWarning: browser extensions (e.g. Immersive Translate)
+  // inject attributes on <html> before hydration, which is harmless.
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
